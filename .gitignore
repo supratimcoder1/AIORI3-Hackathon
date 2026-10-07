@@ -1,0 +1,19 @@
+*.pyc
+__pycache__/
+*.egg-info/
+node_modules/
+*.log
+.DS_Store
+
+# Environments
+.env
+.env.*
+!.env.example
+.venv
+venv/
+ENV/
+env/
+
+# Data and Temp
+scratch/
+*.csv
