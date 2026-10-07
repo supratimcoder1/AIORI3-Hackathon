@@ -1,0 +1,24 @@
+{
+ "actions": [],
+ "creation": "2026-10-06 12:00:00.000000",
+ "istable": 1,
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "criterion", "max_score", "scored_by"
+ ],
+ "fields": [
+  {"fieldname": "criterion", "fieldtype": "Link", "label": "Criterion", "options": "Evaluation Criterion", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "max_score", "fieldtype": "Float", "label": "Max Score", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "scored_by", "fieldtype": "Data", "label": "Scored By", "read_only": 1, "fetch_from": "criterion.scored_by", "in_list_view": 1}
+ ],
+ "links": [],
+ "modified": "2026-10-06 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Hackathon Eval",
+ "name": "Round Criterion",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

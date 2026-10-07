@@ -1,0 +1,40 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"header_1\",\"type\":\"header\",\"data\":{\"text\":\"Evaluations\",\"col\":12}},{\"id\":\"sc_evals\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Evaluation\",\"col\":3}}]",
+ "creation": "2026-10-07 00:50:16.121797",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Mentor Dashboard",
+ "links": [],
+ "modified": "2026-10-07 21:34:47.280921",
+ "modified_by": "Administrator",
+ "module": "Hackathon Eval",
+ "name": "Mentor Dashboard",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "AIORI-3 Mentor"
+  },
+  {
+   "role": "Chief Mentor"
+  }
+ ],
+ "sequence_id": 0.0,
+ "shortcuts": [
+  {
+   "doc_view": "",
+   "label": "Evaluation",
+   "link_to": "Evaluation",
+   "type": "DocType"
+  }
+ ],
+ "title": "Mentor Dashboard"
+}

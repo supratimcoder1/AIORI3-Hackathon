@@ -1,0 +1,69 @@
+import frappe
+from frappe.model.document import Document
+
+class HackathonTeam(Document):
+    def validate(self):
+        self.validate_team_composition()
+
+    def before_insert(self):
+        import uuid
+        self.team_uuid = str(uuid.uuid4())
+        
+    def validate_team_composition(self):
+        members = [
+            (self.member_1_name, self.member_1_type),
+            (self.member_2_name, self.member_2_type),
+            (self.member_3_name, self.member_3_type),
+        ]
+        student_count = sum(1 for name, m_type in members if name and m_type and m_type.strip().lower() == "student")
+        faculty_count = sum(1 for name, m_type in members if name and m_type and m_type.strip().lower() == "faculty")
+
+        if faculty_count >= 1 and student_count >= 2:
+            self.valid_composition = 1
+        else:
+            self.valid_composition = 0
+
+    def on_trash(self):
+        # Optional cleanup logic if a team is "killed" by deleting it
+        pass
+
+    def after_insert(self):
+        # If teams are imported while a round is already Open, auto-provision evaluations for them!
+        if self.current_level:
+            round_name = f"Level {self.current_level}"
+            if frappe.db.exists("Hackathon Round", round_name):
+                rd = frappe.get_doc("Hackathon Round", round_name)
+                if rd.status == "Open" and self.status in ["Active", "Finalist"]:
+                    team_track = (self.problem_statement_area or "").strip()
+                    mentors = frappe.get_all("Mentor Profile", filters={"status": "Active"}, fields=["email", "track"])
+                    
+                    assigned_mentors = []
+                    fallback_map = {
+                        "Cloud Computing and IOT": "Cloud Computing & IOT",
+                        "6G and Future Networks": "6G & Future Networks"
+                    }
+                    for m in mentors:
+                        t = (m.track or "").strip()
+                        if t in fallback_map:
+                            t = fallback_map[t]
+                        if t == team_track:
+                            assigned_mentors.append(m.email)
+                            
+                    for mentor_email in assigned_mentors:
+                        if not frappe.db.exists("Evaluation", {"team": self.name, "round": round_name, "evaluator": mentor_email}):
+                            eval_doc = frappe.get_doc({
+                                "doctype": "Evaluation",
+                                "team": self.name,
+                                "round": round_name,
+                                "evaluator": mentor_email,
+                                "evaluator_type": "Mentor",
+                                "status": "Pending"
+                            })
+                            from frappe.utils import flt
+                            for rc in rd.criteria:
+                                eval_doc.append("scores", {
+                                    "criterion": rc.criterion,
+                                    "max_score": flt(rc.max_score or 10.0),
+                                    "score": 0.0
+                                })
+                            eval_doc.insert(ignore_permissions=True)

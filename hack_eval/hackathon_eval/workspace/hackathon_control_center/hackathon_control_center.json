@@ -1,0 +1,76 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"header_1\",\"type\":\"header\",\"data\":{\"text\":\"Management\",\"col\":12}},{\"id\":\"sc_teams\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Hackathon Team\",\"col\":3}},{\"id\":\"sc_rounds\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Hackathon Round\",\"col\":3}},{\"id\":\"sc_mentor_profile\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mentor Profile\",\"col\":3}},{\"id\":\"header_reports\",\"type\":\"header\",\"data\":{\"text\":\"Reports\",\"col\":12}},{\"id\":\"sc_lb\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Round Leaderboard\",\"col\":3}},{\"id\":\"sc_ep\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Evaluator Progress\",\"col\":3}},{\"id\":\"sc_cc\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Coverage Check\",\"col\":3}}]",
+ "creation": "2026-10-07 00:50:15.949817",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Hackathon Control Center",
+ "links": [],
+ "modified": "2026-10-07 21:43:32.763924",
+ "modified_by": "Administrator",
+ "module": "Hackathon Eval",
+ "name": "Hackathon Control Center",
+ "number_cards": [],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Administrator"
+  },
+  {
+   "role": "Hackathon Organizer"
+  }
+ ],
+ "sequence_id": 0.0,
+ "shortcuts": [
+  {
+   "doc_view": "",
+   "label": "Hackathon Team",
+   "link_to": "Hackathon Team",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "",
+   "label": "Hackathon Round",
+   "link_to": "Hackathon Round",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "",
+   "label": "Mentor Profile",
+   "link_to": "Mentor Profile",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "",
+   "label": "Round Leaderboard",
+   "link_to": "Round Leaderboard",
+   "report_ref_doctype": "Hackathon Team",
+   "type": "Report"
+  },
+  {
+   "doc_view": "",
+   "label": "Evaluator Progress",
+   "link_to": "Evaluator Progress",
+   "report_ref_doctype": "Evaluation",
+   "type": "Report"
+  },
+  {
+   "doc_view": "",
+   "label": "Coverage Check",
+   "link_to": "Coverage Check",
+   "report_ref_doctype": "Evaluation",
+   "type": "Report"
+  }
+ ],
+ "title": "Hackathon Control Center"
+}

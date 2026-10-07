@@ -1,0 +1,405 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "TEAM-.####",
+ "creation": "2026-10-06 12:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "team_name",
+  "institution",
+  "problem_statement_area",
+  "valid_composition",
+  "faculty",
+  "mentor",
+  "member_1_name",
+  "member_1_email",
+  "member_1_contact",
+  "member_1_affiliation",
+  "member_1_expertise",
+  "member_1_type",
+  "member_2_name",
+  "member_2_email",
+  "member_2_contact",
+  "member_2_affiliation",
+  "member_2_expertise",
+  "member_2_type",
+  "member_3_name",
+  "member_3_email",
+  "member_3_contact",
+  "member_3_affiliation",
+  "member_3_expertise",
+  "member_3_type",
+  "presentation_link",
+  "repository_link",
+  "status",
+  "current_level",
+  "eliminated_at_level",
+  "final_position",
+  "level1_score",
+  "level2_score",
+  "level3_score",
+  "cumulative_score",
+  "city",
+  "zone",
+  "reason_for_problem_area",
+  "collaboration_plan",
+  "primary_1",
+  "email_address_1",
+  "submitter_name",
+  "submitter_mail_id",
+  "internet_measurement_col",
+  "cyber_security_col",
+  "cloud_computing_iot_col",
+  "6g_future_networks_col",
+  "smart_cities_col",
+  "timestamp_col",
+  "email_address_2",
+  "full_name_col"
+ ],
+ "fields": [
+  {
+   "fieldname": "team_name",
+   "fieldtype": "Data",
+   "label": "Name your Team",
+   "reqd": 1,
+   "unique": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "institution",
+   "fieldtype": "Data",
+   "label": "Institute"
+  },
+  {
+   "fieldname": "problem_statement_area",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Problem Statement Area"
+  },
+  {
+   "default": "0",
+   "fieldname": "valid_composition",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Valid Composition"
+  },
+  {
+   "fieldname": "faculty",
+   "fieldtype": "Link",
+   "label": "Faculty",
+   "options": "Faculty"
+  },
+  {
+   "fieldname": "mentor",
+   "fieldtype": "Link",
+   "label": "Assigned Mentor",
+   "options": "User"
+  },
+  {
+   "fieldname": "member_1_name",
+   "fieldtype": "Data",
+   "label": "Team Member 1 - Name "
+  },
+  {
+   "fieldname": "member_1_email",
+   "fieldtype": "Data",
+   "label": "Tema Member 1 - Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "member_1_contact",
+   "fieldtype": "Data",
+   "label": "Team Member 1 - Contact Number"
+  },
+  {
+   "fieldname": "member_1_affiliation",
+   "fieldtype": "Data",
+   "label": "Team Member 1  - Affiliation "
+  },
+  {
+   "fieldname": "member_1_expertise",
+   "fieldtype": "Data",
+   "label": "Team Member 1 -  Area of Expertise / Accomplishments"
+  },
+  {
+   "fieldname": "member_1_type",
+   "fieldtype": "Data",
+   "label": "Team Member 1 - Type"
+  },
+  {
+   "fieldname": "member_2_name",
+   "fieldtype": "Data",
+   "label": "Team Member 2 - Name "
+  },
+  {
+   "fieldname": "member_2_email",
+   "fieldtype": "Data",
+   "label": "Team Member 2 - Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "member_2_contact",
+   "fieldtype": "Data",
+   "label": "Team Member 2 - Contact Number"
+  },
+  {
+   "fieldname": "member_2_affiliation",
+   "fieldtype": "Data",
+   "label": "Team Member 2  - Affiliation "
+  },
+  {
+   "fieldname": "member_2_expertise",
+   "fieldtype": "Data",
+   "label": "Team Member 2 -  Area of Expertise / Accomplishments"
+  },
+  {
+   "fieldname": "member_2_type",
+   "fieldtype": "Data",
+   "label": "Team Member 2 - Type"
+  },
+  {
+   "fieldname": "member_3_name",
+   "fieldtype": "Data",
+   "label": "Team Member 3 - Name "
+  },
+  {
+   "fieldname": "member_3_email",
+   "fieldtype": "Data",
+   "label": "Team Member 3 - Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "member_3_contact",
+   "fieldtype": "Data",
+   "label": "Team Member 3 - Contact Number"
+  },
+  {
+   "fieldname": "member_3_affiliation",
+   "fieldtype": "Data",
+   "label": "Team Member 3  - Affiliation "
+  },
+  {
+   "fieldname": "member_3_expertise",
+   "fieldtype": "Data",
+   "label": "Team Member 3 -  Area of Expertise / Accomplishments"
+  },
+  {
+   "fieldname": "member_3_type",
+   "fieldtype": "Data",
+   "label": "Team Member 3 - Type"
+  },
+  {
+   "fieldname": "presentation_link",
+   "fieldtype": "Data",
+   "label": "Presentation Link",
+   "options": "URL"
+  },
+  {
+   "fieldname": "repository_link",
+   "fieldtype": "Data",
+   "label": "Repository Link",
+   "options": "URL"
+  },
+  {
+   "default": "Active",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Active\nEliminated\nFinalist\nWinner"
+  },
+  {
+   "default": "1",
+   "fieldname": "current_level",
+   "fieldtype": "Int",
+   "label": "Current Level",
+   "read_only": 1
+  },
+  {
+   "fieldname": "eliminated_at_level",
+   "fieldtype": "Int",
+   "label": "Eliminated at Level",
+   "read_only": 1
+  },
+  {
+   "fieldname": "final_position",
+   "fieldtype": "Int",
+   "label": "Final Position",
+   "read_only": 1
+  },
+  {
+   "fieldname": "level1_score",
+   "fieldtype": "Float",
+   "label": "Level 1 Score",
+   "read_only": 1
+  },
+  {
+   "fieldname": "level2_score",
+   "fieldtype": "Float",
+   "label": "Level 2 Score",
+   "read_only": 1
+  },
+  {
+   "fieldname": "level3_score",
+   "fieldtype": "Float",
+   "label": "Level 3 Score",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cumulative_score",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Cumulative Score",
+   "read_only": 1
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "zone",
+   "fieldtype": "Data",
+   "label": "Zone"
+  },
+  {
+   "fieldname": "reason_for_problem_area",
+   "fieldtype": "Small Text",
+   "label": "Why have you selected the above Problem Area?"
+  },
+  {
+   "fieldname": "collaboration_plan",
+   "fieldtype": "Small Text",
+   "label": "How will you collaborate to solve the above problem in this area?"
+  },
+  {
+   "fieldname": "primary_1",
+   "fieldtype": "Data",
+   "label": "Primary 1"
+  },
+  {
+   "fieldname": "email_address_1",
+   "fieldtype": "Data",
+   "label": "Email Address"
+  },
+  {
+   "fieldname": "submitter_name",
+   "fieldtype": "Data",
+   "label": "Submitter Name"
+  },
+  {
+   "fieldname": "submitter_mail_id",
+   "fieldtype": "Data",
+   "label": "Submitter Mail ID"
+  },
+  {
+   "fieldname": "internet_measurement_col",
+   "fieldtype": "Data",
+   "label": "Internet Measurement"
+  },
+  {
+   "fieldname": "cyber_security_col",
+   "fieldtype": "Data",
+   "label": "Cyber Security"
+  },
+  {
+   "fieldname": "cloud_computing_iot_col",
+   "fieldtype": "Data",
+   "label": "Cloud Computing & IOT"
+  },
+  {
+   "fieldname": "6g_future_networks_col",
+   "fieldtype": "Data",
+   "label": "6G & Future Networks "
+  },
+  {
+   "fieldname": "smart_cities_col",
+   "fieldtype": "Data",
+   "label": "Smart Cities"
+  },
+  {
+   "fieldname": "timestamp_col",
+   "fieldtype": "Data",
+   "label": "Timestamp"
+  },
+  {
+   "fieldname": "email_address_2",
+   "fieldtype": "Data",
+   "label": "Email address"
+  },
+  {
+   "fieldname": "full_name_col",
+   "fieldtype": "Data",
+   "label": "FULL NAME"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-07 18:57:09.591289",
+ "modified_by": "Administrator",
+ "module": "Hackathon Eval",
+ "name": "Hackathon Team",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Hackathon Organizer",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "AIORI-3 Mentor"
+  },
+  {
+   "read": 1,
+   "role": "Chief Mentor"
+  },
+  {
+   "read": 1,
+   "role": "Evaluator"
+  },
+  {
+   "read": 1,
+   "role": "Mentor"
+  },
+  {
+   "read": 1,
+   "role": "Reviewer"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "team_name",
+ "track_changes": 1,
+ "search_fields": "team_name,problem_statement_area,status"
+}

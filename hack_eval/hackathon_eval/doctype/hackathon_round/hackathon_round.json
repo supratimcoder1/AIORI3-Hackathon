@@ -1,0 +1,146 @@
+{
+ "actions": [],
+ "autoname": "field:round_name",
+ "creation": "2026-10-06 12:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "round_number",
+  "round_name",
+  "status",
+  "criteria",
+  "mentor_scoring_mode",
+  "advance_count",
+  "max_round_score",
+  "max_cumulative_score",
+  "locked_by",
+  "locked_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "round_number",
+   "fieldtype": "Int",
+   "label": "Round Number",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "round_name",
+   "fieldtype": "Data",
+   "label": "Round Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "Not Started",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Not Started\nOpen\nClosed\nLocked",
+   "read_only": 1
+  },
+  {
+   "fieldname": "criteria",
+   "fieldtype": "Table",
+   "label": "Criteria",
+   "options": "Round Criterion",
+   "reqd": 1
+  },
+  {
+   "fieldname": "mentor_scoring_mode",
+   "fieldtype": "Select",
+   "label": "Mentor Scoring Mode",
+   "options": "Assigned Mentor\nMentor Panel"
+  },
+  {
+   "fieldname": "advance_count",
+   "fieldtype": "Int",
+   "label": "Advance Count"
+  },
+  {
+   "fieldname": "max_round_score",
+   "fieldtype": "Float",
+   "label": "Max Round Score",
+   "read_only": 1
+  },
+  {
+   "fieldname": "max_cumulative_score",
+   "fieldtype": "Float",
+   "label": "Max Cumulative Score",
+   "read_only": 1
+  },
+  {
+   "fieldname": "locked_by",
+   "fieldtype": "Link",
+   "label": "Locked By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "locked_on",
+   "fieldtype": "Datetime",
+   "label": "Locked On",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-07 19:15:00.000000",
+ "modified_by": "Administrator",
+ "module": "Hackathon Eval",
+ "name": "Hackathon Round",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "report": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "Hackathon Organizer",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "report": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "AIORI-3 Mentor",
+   "read": 1
+  },
+  {
+   "role": "Chief Mentor",
+   "read": 1
+  },
+  {
+   "role": "Evaluator",
+   "read": 1
+  },
+  {
+   "role": "Mentor",
+   "read": 1
+  },
+  {
+   "role": "Reviewer",
+   "read": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

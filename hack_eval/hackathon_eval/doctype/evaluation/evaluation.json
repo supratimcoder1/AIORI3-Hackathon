@@ -1,0 +1,154 @@
+{
+ "actions": [],
+ "creation": "2026-10-06 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "team",
+  "round",
+  "evaluator",
+  "evaluator_type",
+  "status",
+  "scores",
+  "total_score",
+  "comments",
+  "submitted_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "team",
+   "fieldtype": "Link",
+   "label": "Team",
+   "options": "Hackathon Team",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "round",
+   "fieldtype": "Link",
+   "label": "Round",
+   "options": "Hackathon Round",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "evaluator",
+   "fieldtype": "Link",
+   "label": "Evaluator",
+   "options": "User",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "evaluator_type",
+   "fieldtype": "Select",
+   "label": "Evaluator Type",
+   "options": "Evaluator\nMentor",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nDraft\nSubmitted",
+   "default": "Pending",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "scores",
+   "fieldtype": "Table",
+   "label": "Scores",
+   "options": "Evaluation Score"
+  },
+  {
+   "fieldname": "total_score",
+   "fieldtype": "Float",
+   "label": "Total Score",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "comments",
+   "fieldtype": "Text",
+   "label": "Comments"
+  },
+  {
+   "fieldname": "submitted_on",
+   "fieldtype": "Datetime",
+   "label": "Submitted On",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-07 16:25:00.000000",
+ "modified_by": "Administrator",
+ "module": "Hackathon Eval",
+ "name": "Evaluation",
+ "naming_rule": "Expression",
+ "autoname": "EVAL-.####",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "import": 1,
+   "export": 1,
+   "report": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "Hackathon Organizer",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "import": 1,
+   "export": 1,
+   "report": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "AIORI-3 Mentor",
+   "read": 1,
+   "write": 1
+  },
+  {
+   "role": "Chief Mentor",
+   "read": 1,
+   "write": 1
+  },
+  {
+   "role": "Evaluator",
+   "read": 1,
+   "write": 1
+  },
+  {
+   "role": "Mentor",
+   "read": 1,
+   "write": 1
+  },
+  {
+   "role": "Reviewer",
+   "read": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1,
+ "allow_import": 1,
+ "search_fields": "team,evaluator,round,status"
+}

@@ -1,0 +1,36 @@
+{
+ "actions": [],
+ "creation": "2026-10-06 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "team", "round", "criterion", "original_score", "adjusted_score", "reason", "adjusted_by", "adjusted_on", "is_active"
+ ],
+ "fields": [
+  {"fieldname": "team", "fieldtype": "Link", "label": "Team", "options": "Hackathon Team", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "round", "fieldtype": "Link", "label": "Round", "options": "Hackathon Round", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "criterion", "fieldtype": "Link", "label": "Criterion", "options": "Evaluation Criterion", "reqd": 1},
+  {"fieldname": "original_score", "fieldtype": "Float", "label": "Original Score", "read_only": 1},
+  {"fieldname": "adjusted_score", "fieldtype": "Float", "label": "Adjusted Score", "reqd": 1, "in_list_view": 1},
+  {"fieldname": "reason", "fieldtype": "Small Text", "label": "Reason", "reqd": 1},
+  {"fieldname": "adjusted_by", "fieldtype": "Link", "label": "Adjusted By", "options": "User", "read_only": 1},
+  {"fieldname": "adjusted_on", "fieldtype": "Datetime", "label": "Adjusted On", "read_only": 1},
+  {"fieldname": "is_active", "fieldtype": "Check", "label": "Is Active", "default": "1", "read_only": 1}
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-06 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Hackathon Eval",
+ "name": "Score Adjustment",
+ "naming_rule": "Expression",
+ "autoname": "ADJ-.####",
+ "owner": "Administrator",
+ "permissions": [
+  {"read": 1, "role": "Hackathon Organizer"},
+  {"create": 1, "read": 1, "role": "Reviewer"}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -1,0 +1,48 @@
+{
+ "actions": [],
+ "creation": "2026-10-06 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "team", "round", "evaluations_expected", "evaluations_submitted",
+  "criterion_scores", "round_score", "previous_cumulative", "cumulative_score", "rank",
+  "flag_incomplete", "flag_disagreement", "flag_near_cutoff", "flag_tie_at_cutoff", "flag_notes",
+  "review_status", "reviewed_by", "reviewed_on", "outcome"
+ ],
+ "fields": [
+  {"fieldname": "team", "fieldtype": "Link", "label": "Team", "options": "Hackathon Team", "read_only": 1, "in_list_view": 1},
+  {"fieldname": "round", "fieldtype": "Link", "label": "Round", "options": "Hackathon Round", "read_only": 1, "in_list_view": 1},
+  {"fieldname": "evaluations_expected", "fieldtype": "Int", "label": "Expected", "read_only": 1},
+  {"fieldname": "evaluations_submitted", "fieldtype": "Int", "label": "Submitted", "read_only": 1},
+  {"fieldname": "criterion_scores", "fieldtype": "Table", "label": "Criterion Scores", "options": "Result Criterion Score", "read_only": 1},
+  {"fieldname": "round_score", "fieldtype": "Float", "label": "Round Score", "read_only": 1, "in_list_view": 1},
+  {"fieldname": "previous_cumulative", "fieldtype": "Float", "label": "Previous Cumulative", "read_only": 1},
+  {"fieldname": "cumulative_score", "fieldtype": "Float", "label": "Cumulative Score", "read_only": 1, "in_list_view": 1},
+  {"fieldname": "rank", "fieldtype": "Int", "label": "Rank", "read_only": 1, "in_list_view": 1},
+  {"fieldname": "flag_incomplete", "fieldtype": "Check", "label": "Incomplete", "read_only": 1},
+  {"fieldname": "flag_disagreement", "fieldtype": "Check", "label": "Disagreement", "read_only": 1},
+  {"fieldname": "flag_near_cutoff", "fieldtype": "Check", "label": "Near Cutoff", "read_only": 1},
+  {"fieldname": "flag_tie_at_cutoff", "fieldtype": "Check", "label": "Tie at Cutoff", "read_only": 1},
+  {"fieldname": "flag_notes", "fieldtype": "Small Text", "label": "Flag Notes", "read_only": 1},
+  {"fieldname": "review_status", "fieldtype": "Select", "label": "Review Status", "options": "Not Required\nPending\nReviewed", "read_only": 1, "in_list_view": 1},
+  {"fieldname": "reviewed_by", "fieldtype": "Link", "label": "Reviewed By", "options": "User", "read_only": 1},
+  {"fieldname": "reviewed_on", "fieldtype": "Datetime", "label": "Reviewed On", "read_only": 1},
+  {"fieldname": "outcome", "fieldtype": "Select", "label": "Outcome", "options": "Pending\nAdvanced\nEliminated\nFirst\nSecond\nThird\nFinalist", "read_only": 1}
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-06 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Hackathon Eval",
+ "name": "Team Round Result",
+ "naming_rule": "Expression",
+ "autoname": "RES-.####",
+ "owner": "Administrator",
+ "permissions": [
+  {"read": 1, "role": "Hackathon Organizer"},
+  {"read": 1, "role": "Reviewer"}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

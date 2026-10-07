@@ -1,0 +1,31 @@
+{
+ "actions": [],
+ "creation": "2026-10-06 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "criterion_name", "description", "scored_by"
+ ],
+ "fields": [
+  {"fieldname": "criterion_name", "fieldtype": "Data", "label": "Criterion Name", "reqd": 1, "unique": 1},
+  {"fieldname": "description", "fieldtype": "Text", "label": "Description"},
+  {"fieldname": "scored_by", "fieldtype": "Select", "label": "Scored By", "options": "Evaluator\nMentor", "reqd": 1}
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-06 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Hackathon Eval",
+ "name": "Evaluation Criterion",
+ "naming_rule": "By fieldname",
+ "autoname": "field:criterion_name",
+ "owner": "Administrator",
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "Hackathon Organizer", "share": 1, "write": 1},
+  {"read": 1, "role": "Evaluator"},
+  {"read": 1, "role": "Mentor"},
+  {"read": 1, "role": "Reviewer"}
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
