@@ -31,11 +31,3 @@ def after_install():
             }).insert(ignore_permissions=True)
 
     # Note: Rounds will be created after DocTypes are synced via bench migrate.
-    
-    # Auto-seed dummy data for test bench
-    try:
-        from hack_eval.seed_data import run as seed_data_run
-        seed_data_run()
-        print("Successfully seeded data automatically during install.")
-    except Exception as e:
-        print(f"Skipping auto-seed (maybe already exists or error): {e}")

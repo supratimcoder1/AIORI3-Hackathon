@@ -38,13 +38,16 @@ Run these commands from your `frappe-bench` directory:
 
 ## Setup & Seeding
 
-### Auto-Seeding (Dev/Test Environment)
-Upon `install-app`, the app will automatically trigger `seed_data.py` via Frappe's `after_install` hook. This creates:
+### Manual Data Seeding (Dev/Test Environment)
+If you want to populate the system with dummy data for testing purposes, you can manually trigger the seed script. This creates:
 - 4 sample mentors with distinct profiles.
 - 2 sample faculty members.
 - 10 sample teams with valid team compositions.
 
-*Note: For a pure production environment, you may comment out the auto-seed section in `hack_eval/setup.py` prior to installation, or manually delete the dummy records from the Desk.*
+Run this command from your bench directory:
+```bash
+bench --site test.hackathon.local execute hack_eval.seed_data.run
+```
 
 ### Manual CSV Data Import
 The app fully aligns with the 37-column Google Form layout for the Hackathon registrations. 
