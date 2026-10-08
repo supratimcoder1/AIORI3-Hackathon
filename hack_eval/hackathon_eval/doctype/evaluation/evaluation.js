@@ -27,14 +27,22 @@ frappe.ui.form.on('Evaluation', {
             frappe.db.get_value('Hackathon Round', frm.doc.round, 'status', function(r) {
                 var round_status = r ? r.status : 'Closed';
                 if (!is_admin) {
-                    if (round_status !== 'Open') {
+                    // Chief mentors can see everything, but can only edit their own.
+                    if (frm.doc.evaluator !== frappe.session.user) {
+                        frm.disable_save();
+                        frm.set_read_only();
+                        frm.dashboard.set_headline_alert(
+                            __('Read Only: You can view this evaluation, but you cannot edit scores assigned to another mentor.'),
+                            'yellow'
+                        );
+                    } else if (round_status !== 'Open' && !frappe.user_roles.includes('Chief Mentor')) {
                         frm.disable_save();
                         frm.set_read_only();
                         frm.dashboard.set_headline_alert(
                             __('Scoring Locked: Round {0} is currently {1}. Mentors cannot edit evaluations.', [frm.doc.round, round_status]),
                             'red'
                         );
-                    } else if (frm.doc.status === 'Submitted') {
+                    } else if (frm.doc.status === 'Submitted' && !frappe.user_roles.includes('Chief Mentor')) {
                         frm.disable_save();
                         frm.set_read_only();
                         frm.dashboard.set_headline_alert(
@@ -47,7 +55,7 @@ frappe.ui.form.on('Evaluation', {
         }
 
         // Action button to Submit Evaluation
-        if (!frm.is_new() && frm.doc.status !== 'Submitted') {
+        if (!frm.is_new() && frm.doc.status !== 'Submitted' && (is_admin || frm.doc.evaluator === frappe.session.user)) {
             frm.add_custom_button(__('Submit Evaluation'), function() {
                 frappe.confirm(__('Are you sure you want to finalize and submit these scores?'), function() {
                     frm.set_value('status', 'Submitted');
