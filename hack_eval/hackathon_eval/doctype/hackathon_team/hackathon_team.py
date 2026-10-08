@@ -8,7 +8,8 @@ def clean_email(email_str):
     match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', str(email_str))
     if match:
         return match.group(0).lower()
-    return email_str
+    # If no valid email is found, return None to blank the field instead of crashing Frappe
+    return None
 
 class HackathonTeam(Document):
     def before_validate(self):
