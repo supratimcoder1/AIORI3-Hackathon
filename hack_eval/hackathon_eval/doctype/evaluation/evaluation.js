@@ -78,8 +78,8 @@ frappe.ui.form.on('Evaluation', {
             });
         }
 
-        // Action button to Submit Evaluation
-        if (!frm.is_new() && frm.doc.status !== 'Submitted' && (is_admin || evaluator_email === session_email)) {
+        // Action button to Submit Evaluation (Backend permissions.py will block unauthorized users)
+        if (!frm.is_new() && frm.doc.status !== 'Submitted') {
             frm.add_custom_button(__('Submit Evaluation'), function() {
                 frappe.confirm(__('Are you sure you want to finalize and submit these scores?'), function() {
                     frm.set_value('status', 'Submitted');
