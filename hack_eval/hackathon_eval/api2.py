@@ -27,7 +27,7 @@ def fix_mentors():
                 
     # 3. Create 15 new Mentor Profiles
     tracks = [
-        'Internet Measurement',
+        'Internet Measurements',
         'Cyber Security',
         'Cloud Computing & IOT',
         '6G & Future Networks',

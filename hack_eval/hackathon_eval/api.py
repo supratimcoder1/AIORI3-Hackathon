@@ -48,7 +48,7 @@ def fix_mentors():
                 
     # 3. Create 15 new Mentor Profiles
     tracks = [
-        'Internet Measurement',
+        'Internet Measurementss',
         'Cyber Security',
         'Cloud Computing & IOT',
         '6G & Future Networks',
@@ -183,7 +183,7 @@ def fix_mentor_tracks():
     mapping = {
         "Cloud Computing and IOT": "Cloud Computing & IOT",
         "6G and Future Networks": "6G & Future Networks",
-        "Internet Measurement": "Internet Measurement",
+        "Internet Measurements": "Internet Measurements",
         "Cyber Security": "Cyber Security",
         "Smart Cities": "Smart Cities"
     }
@@ -208,7 +208,7 @@ def fix_tracks_sql():
     mapping = {
         "Cloud Computing and IOT": "Cloud Computing & IOT",
         "6G and Future Networks": "6G & Future Networks",
-        "Internet Measurement": "Internet Measurement",
+        "Internet Measurements": "Internet Measurements",
         "Cyber Security": "Cyber Security",
         "Smart Cities": "Smart Cities"
     }

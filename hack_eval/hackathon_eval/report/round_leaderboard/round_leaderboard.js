@@ -14,7 +14,7 @@ frappe.query_reports["Round Leaderboard"] = {
 			"fieldname": "track",
 			"label": __("Track"),
 			"fieldtype": "Select",
-			"options": "\nInternet Measurement\nCyber Security\nCloud Computing & IOT\n6G & Future Networks\nSmart Cities",
+			"options": "\nInternet Measurements\nCyber Security\nCloud Computing & IOT\n6G & Future Networks\nSmart Cities",
 		}
 	],
 	"formatter": function(value, row, column, data, default_formatter) {

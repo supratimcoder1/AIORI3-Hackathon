@@ -306,7 +306,7 @@
   {
    "fieldname": "internet_measurement_col",
    "fieldtype": "Data",
-   "label": "Internet Measurement"
+   "label": "Internet Measurements"
   },
   {
    "fieldname": "cyber_security_col",
