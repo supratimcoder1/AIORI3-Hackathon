@@ -2,13 +2,59 @@ import frappe
 from frappe.utils import flt
 
 @frappe.whitelist()
-def reset_round(round_name):
+def reset_round(round_name, reset_level=None):
     frappe.only_for(["System Manager", "Hackathon Organizer"])
     round_doc = frappe.get_doc("Hackathon Round", round_name)
+    
+    if reset_level == "Revert completely to starting (Wipe all scores)":
+        teams = frappe.get_all("Hackathon Team")
+        for t in teams:
+            doc = frappe.get_doc("Hackathon Team", t.name)
+            doc.level1_score = 0
+            doc.level2_score = 0
+            doc.level3_score = 0
+            doc.cumulative_score = 0
+            doc.current_level = 1
+            doc.status = "Active"
+            doc.save(ignore_permissions=True)
+        frappe.db.sql("DELETE FROM `tabEvaluation Score`")
+        frappe.db.sql("DELETE FROM `tabEvaluation`")
+        frappe.db.sql("DELETE FROM `tabTeam Round Result`")
+        frappe.db.sql("UPDATE `tabHackathon Round` SET status='Not Started'")
+        
+    elif reset_level == "Revert to Level 1 (Wipe L2 & L3 scores)":
+        teams = frappe.get_all("Hackathon Team")
+        for t in teams:
+            doc = frappe.get_doc("Hackathon Team", t.name)
+            doc.level2_score = 0
+            doc.level3_score = 0
+            doc.cumulative_score = doc.level1_score or 0.0
+            doc.current_level = 1
+            doc.status = "Active"
+            doc.save(ignore_permissions=True)
+        frappe.db.sql("DELETE FROM `tabEvaluation Score` WHERE parent IN (SELECT name FROM `tabEvaluation` WHERE round IN ('Level 2', 'Level 3'))")
+        frappe.db.sql("DELETE FROM `tabEvaluation` WHERE round IN ('Level 2', 'Level 3')")
+        frappe.db.sql("DELETE FROM `tabTeam Round Result` WHERE round IN ('Level 2', 'Level 3')")
+        frappe.db.sql("UPDATE `tabHackathon Round` SET status='Not Started' WHERE round_name IN ('Level 2', 'Level 3')")
+        
+    elif reset_level == "Revert to Level 2 (Wipe L3 scores)":
+        teams = frappe.get_all("Hackathon Team")
+        for t in teams:
+            doc = frappe.get_doc("Hackathon Team", t.name)
+            doc.level3_score = 0
+            doc.cumulative_score = (doc.level1_score or 0.0) + (doc.level2_score or 0.0)
+            doc.current_level = 2
+            doc.status = "Active"
+            doc.save(ignore_permissions=True)
+        frappe.db.sql("DELETE FROM `tabEvaluation Score` WHERE parent IN (SELECT name FROM `tabEvaluation` WHERE round = 'Level 3')")
+        frappe.db.sql("DELETE FROM `tabEvaluation` WHERE round = 'Level 3'")
+        frappe.db.sql("DELETE FROM `tabTeam Round Result` WHERE round = 'Level 3'")
+        frappe.db.sql("UPDATE `tabHackathon Round` SET status='Not Started' WHERE round_name = 'Level 3'")
+        
     round_doc.status = "Not Started"
     round_doc.save(ignore_permissions=True)
     frappe.db.commit()
-    return f"Round '{round_name}' has been reset to Not Started."
+    return f"Round '{round_name}' reset processed."
 
 @frappe.whitelist()
 def open_round(round_name):
@@ -66,7 +112,6 @@ def open_round(round_name):
                     "team": team.name,
                     "round": round_name,
                     "evaluator": mentor_email,
-                    "evaluator_type": "Mentor",
                     "status": "Pending"
                 })
                 for rc in round_doc.criteria:

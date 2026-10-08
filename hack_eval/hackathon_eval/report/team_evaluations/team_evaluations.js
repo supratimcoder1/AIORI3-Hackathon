@@ -13,15 +13,15 @@ frappe.query_reports["Team Evaluations"] = {
 			"fieldname": "track",
 			"label": __("Track"),
 			"fieldtype": "Select",
-			"options": "\nInternet Measurement\nCyber Security\nCloud Computing & IOT\n6G & Future Networks\nSmart Cities",
+			"options": "\nInternet Measurement\nCyber Security\nCloud Computing & IOT\n6G & Future Networks\nSmart Cities"
 		}
 	],
 	"formatter": function(value, row, column, data, default_formatter) {
 		value = default_formatter(value, row, column, data);
 		
-		if (column.fieldname == "team_code") {
-            // When clicked, it routes to Evaluation list, filtered by team
-			value = `<a href="/app/evaluation?team=${encodeURIComponent(data.team_link)}" target="_blank" style="font-weight:bold">${data.team_code || data.team_name}</a>`;
+		if (data && column.fieldname === "team_code") {
+			const label = data.team_code || data.team_name || data.team_link;
+			value = `<a href="/app/evaluation?team=${encodeURIComponent(data.team_link)}" target="_blank" style="font-weight:bold">${frappe.utils.escape_html(label)}</a>`;
 		}
 
 		return value;

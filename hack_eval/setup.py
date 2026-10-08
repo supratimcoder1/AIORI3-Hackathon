@@ -31,3 +31,33 @@ def after_install():
             }).insert(ignore_permissions=True)
 
     # Note: Rounds will be created after DocTypes are synced via bench migrate.
+    after_migrate()
+
+def after_migrate():
+    sync_custom_workspaces()
+    hide_standard_workspaces()
+
+def hide_standard_workspaces():
+    workspaces_to_hide = ['Users', 'Website', 'Tools', 'Integrations', 'Build']
+    for ws in workspaces_to_hide:
+        if frappe.db.exists('Workspace', ws):
+            frappe.db.set_value('Workspace', ws, 'public', 0)
+            frappe.db.set_value('Workspace', ws, 'is_hidden', 1)
+    frappe.db.commit()
+
+def sync_custom_workspaces():
+    import json
+    import os
+    for ws_dir in ["mentor_dashboard", "hackathon_control_center"]:
+        path = frappe.get_app_path("hack_eval", "hackathon_eval", "workspace", ws_dir, f"{ws_dir}.json")
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            ws_name = data.get("name")
+            if frappe.db.exists("Workspace", ws_name):
+                frappe.delete_doc("Workspace", ws_name, ignore_permissions=True, force=True)
+            doc = frappe.get_doc(data)
+            doc.flags.ignore_permissions = True
+            doc.insert()
+    frappe.db.commit()
+    frappe.clear_cache()

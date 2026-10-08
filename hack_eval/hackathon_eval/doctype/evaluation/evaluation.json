@@ -5,9 +5,9 @@
  "engine": "InnoDB",
  "field_order": [
   "team",
+  "team_code",
   "round",
   "evaluator",
-  "evaluator_type",
   "status",
   "scores",
   "total_score",
@@ -21,6 +21,15 @@
    "label": "Team",
    "options": "Hackathon Team",
    "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "team_code",
+   "fieldtype": "Data",
+   "label": "Team Code",
+   "fetch_from": "team.team_code",
+   "read_only": 1,
    "in_list_view": 1,
    "in_standard_filter": 1
   },
@@ -41,13 +50,6 @@
    "reqd": 1,
    "in_list_view": 1,
    "in_standard_filter": 1
-  },
-  {
-   "fieldname": "evaluator_type",
-   "fieldtype": "Select",
-   "label": "Evaluator Type",
-   "options": "Evaluator\nMentor",
-   "reqd": 1
   },
   {
    "fieldname": "status",

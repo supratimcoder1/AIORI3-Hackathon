@@ -6,6 +6,7 @@ app_email = "test@example.com"
 app_license = "mit"
 
 after_install = "hack_eval.setup.after_install"
+after_migrate = "hack_eval.setup.after_migrate"
 
 permission_query_conditions = {
     "Hackathon Team": "hack_eval.hackathon_eval.permissions.get_team_permission_query",

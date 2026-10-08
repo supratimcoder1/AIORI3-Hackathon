@@ -54,25 +54,24 @@ def get_columns():
 
 def get_data(filters):
     conditions = []
+    values = {}
     if filters and filters.get('round'):
-        conditions.append(f"e.round = '{filters.get('round')}'")
+        conditions.append("e.round = %(round)s")
+        values["round"] = filters.get("round")
     if filters and filters.get('track'):
-        conditions.append(f"t.problem_statement_area = '{filters.get('track')}'")
+        conditions.append("t.problem_statement_area = %(track)s")
+        values["track"] = filters.get("track")
         
-    # Role-based filtering
-    is_chief_or_admin = frappe.has_permission("Evaluation", "write") # Rough check, we will do explicit role check
     roles = frappe.get_roles(frappe.session.user)
+    is_privileged = any(r in roles for r in ["Administrator", "System Manager", "Hackathon Organizer", "Chief Mentor"])
     
-    if "Administrator" in roles or "System Manager" in roles or "Hackathon Organizer" in roles or "Chief Mentor" in roles:
-        # Can see all teams
-        pass
-    else:
-        # Regular mentor: only see teams they are explicitly evaluating
-        conditions.append(f"e.evaluator = '{frappe.session.user}'")
+    if not is_privileged:
+        conditions.append("e.evaluator = %(user)s")
+        values["user"] = frappe.session.user
         
-    where_clause = " AND ".join(conditions)
-    if where_clause:
-        where_clause = " WHERE " + where_clause
+    where_clause = ""
+    if conditions:
+        where_clause = " WHERE " + " AND ".join(conditions)
         
     sql = f"""
         SELECT 
@@ -82,14 +81,16 @@ def get_data(filters):
             t.problem_statement_area as track,
             e.round,
             t.status as status,
-            AVG(e.total_score) as average_score
+            ROUND(AVG(e.total_score), 2) as average_score
         FROM 
             `tabEvaluation` e
         JOIN 
             `tabHackathon Team` t ON e.team = t.name
         {where_clause}
         GROUP BY 
-            t.name, e.round
+            t.name, t.team_code, t.team_name, t.problem_statement_area, e.round, t.status
+        ORDER BY 
+            average_score DESC
     """
     
-    return frappe.db.sql(sql, as_dict=True)
+    return frappe.db.sql(sql, values, as_dict=True)

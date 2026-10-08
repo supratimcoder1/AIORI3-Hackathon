@@ -3,6 +3,7 @@ import frappe
 def get_columns():
     return [
         {"label": "Rank", "fieldname": "rank", "fieldtype": "Int", "width": 60},
+        {"label": "Team Code", "fieldname": "team_code", "fieldtype": "Data", "width": 120},
         {"label": "Team", "fieldname": "team", "fieldtype": "Link", "options": "Hackathon Team", "width": 200},
         {"label": "Track", "fieldname": "track", "fieldtype": "Data", "width": 180},
         {"label": "Valid Composition", "fieldname": "valid_composition", "fieldtype": "Check", "width": 80},
@@ -23,7 +24,7 @@ def execute(filters=None):
     
     # Query all active teams
     team_sql = """
-        SELECT name, problem_statement_area as track, valid_composition, status
+        SELECT name, team_code, problem_statement_area as track, valid_composition, status
         FROM `tabHackathon Team`
         WHERE status IN ('Active', 'Finalist', 'Winner', 'Eliminated')
     """
@@ -103,6 +104,7 @@ def execute(filters=None):
             round_score = cumulative_score
             
         data.append({
+            "team_code": team.team_code,
             "team": team_name,
             "track": team.track,
             "valid_composition": team.valid_composition,

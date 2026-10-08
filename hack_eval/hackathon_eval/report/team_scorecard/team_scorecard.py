@@ -2,6 +2,7 @@ import frappe
 
 def get_columns():
     return [
+        {"label": "Team Code", "fieldname": "team_code", "fieldtype": "Data", "width": 120},
         {"label": "Team", "fieldname": "team", "fieldtype": "Link", "options": "Hackathon Team", "width": 150},
         {"label": "Round", "fieldname": "round", "fieldtype": "Link", "options": "Hackathon Round", "width": 120},
         {"label": "Evaluation", "fieldname": "evaluation", "fieldtype": "Link", "options": "Evaluation", "width": 150},
@@ -23,6 +24,7 @@ def get_data(filters):
     
     sql = f"""
         SELECT
+            t.team_code as team_code,
             ev.team,
             ev.round,
             ev.name as evaluation,
@@ -31,6 +33,7 @@ def get_data(filters):
             SUM(es.max_score) as max_score
         FROM `tabEvaluation Score` es
         JOIN `tabEvaluation` ev ON ev.name = es.parent
+        JOIN `tabHackathon Team` t ON t.name = ev.team
         WHERE {where_clause}
         GROUP BY ev.name
         ORDER BY ev.team ASC, ev.evaluator ASC
@@ -46,11 +49,12 @@ def get_data(filters):
         
         # Spacer row
         data.append({
-            "team": "", "round": "", "evaluation": "", "evaluator": "", "score": None, "max_score": None
+            "team_code": "", "team": "", "round": "", "evaluation": "", "evaluator": "", "score": None, "max_score": None
         })
         
         # Grand Total row
         data.append({
+            "team_code": "",
             "team": "",
             "round": "",
             "evaluation": "",
@@ -61,6 +65,7 @@ def get_data(filters):
         
         # Average / Final Level Score row
         data.append({
+            "team_code": "",
             "team": "",
             "round": "",
             "evaluation": "",

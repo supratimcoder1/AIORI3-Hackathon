@@ -32,6 +32,9 @@
   },
   {
    "role": "Reviewer"
+  },
+  {
+   "role": "Administrator"
   }
  ]
 }

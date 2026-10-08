@@ -27,6 +27,35 @@ frappe.ui.form.on('Hackathon Round', {
             }).addClass('btn-primary');
         }
         
+        var reset_handler = () => {
+            frappe.prompt([
+                {
+                    fieldname: 'reset_level',
+                    fieldtype: 'Select',
+                    label: __('Wipe Options'),
+                    options: 'Revert completely to starting (Wipe all scores)\nRevert to Level 1 (Wipe L2 & L3 scores)\nRevert to Level 2 (Wipe L3 scores)',
+                    reqd: 1,
+                    default: 'Revert completely to starting (Wipe all scores)'
+                }
+            ], (values) => {
+                frappe.confirm(__('WARNING: This will reset the round and wipe scores as selected. Proceed?'), () => {
+                    frappe.call({
+                        method: 'hack_eval.hackathon_eval.evaluation_logic.reset_round',
+                        args: { 
+                            round_name: frm.doc.name,
+                            reset_level: values.reset_level
+                        },
+                        callback: (r) => { 
+                            if (!r.exc) {
+                                frappe.msgprint(r.message || __('Round Reset'));
+                                frm.reload_doc(); 
+                            }
+                        }
+                    });
+                });
+            }, __('Reset Round'), __('Reset'));
+        };
+
         // State 2: Open
         if (frm.doc.status === 'Open') {
             frm.add_custom_button(__('Refresh Live Leaderboard'), () => {
@@ -72,38 +101,12 @@ frappe.ui.form.on('Hackathon Round', {
                 });
             });
 
-            frm.add_custom_button(__('Reset to Not Started'), () => {
-                frappe.confirm(__('WARNING: This will reset the round to Not Started. It will NOT delete existing evaluations, but will allow you to trigger Open Round again. Proceed?'), () => {
-                    frappe.call({
-                        method: 'hack_eval.hackathon_eval.evaluation_logic.reset_round',
-                        args: { round_name: frm.doc.name },
-                        callback: (r) => { 
-                            if (!r.exc) {
-                                frappe.msgprint(r.message || __('Round Reset'));
-                                frm.reload_doc(); 
-                            }
-                        }
-                    });
-                });
-            }).addClass('btn-danger');
+            frm.add_custom_button(__('Reset to Not Started'), reset_handler).addClass('btn-danger');
         }
         
         // State 3: Closed
         if (frm.doc.status === 'Closed') {
-            frm.add_custom_button(__('Reset to Not Started'), () => {
-                frappe.confirm(__('WARNING: This will reset the round to Not Started. Proceed?'), () => {
-                    frappe.call({
-                        method: 'hack_eval.hackathon_eval.evaluation_logic.reset_round',
-                        args: { round_name: frm.doc.name },
-                        callback: (r) => { 
-                            if (!r.exc) {
-                                frappe.msgprint(r.message || __('Round Reset'));
-                                frm.reload_doc(); 
-                            }
-                        }
-                    });
-                });
-            }).addClass('btn-danger');
+            frm.add_custom_button(__('Reset to Not Started'), reset_handler).addClass('btn-danger');
 
             frm.add_custom_button(__('Reopen Round'), () => {
                 frappe.confirm(__('Reopen Round {0} to allow mentors to continue scoring?', [frm.doc.round_name]), () => {
