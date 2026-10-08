@@ -124,12 +124,14 @@
   {
    "role": "AIORI-3 Mentor",
    "read": 1,
-   "write": 1
+   "write": 1,
+   "report": 1
   },
   {
    "role": "Chief Mentor",
    "read": 1,
-   "write": 1
+   "write": 1,
+   "report": 1
   },
   {
    "role": "Evaluator",
