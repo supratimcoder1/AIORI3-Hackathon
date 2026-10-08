@@ -78,15 +78,21 @@ frappe.ui.form.on('Evaluation', {
             });
         }
 
-        // Action button to Submit Evaluation (Backend permissions.py will block unauthorized users)
+        // Action button to Submit Evaluation (Forced DOM injection to bypass Frappe UI hiding quirks)
         if (!frm.is_new() && frm.doc.status !== 'Submitted') {
-            frm.add_custom_button(__('Submit Evaluation'), function() {
-                frappe.confirm(__('Are you sure you want to finalize and submit these scores?'), function() {
-                    frm.set_value('status', 'Submitted');
-                    frm.set_value('submitted_on', frappe.datetime.now_datetime());
-                    frm.save();
+            setTimeout(() => {
+                let $actions = $('.page-actions');
+                $actions.find('.custom-submit-btn').remove();
+                let $btn = $('<button class="custom-submit-btn btn btn-primary btn-sm" style="margin-right: 10px;">Submit Evaluation</button>');
+                $btn.on('click', function() {
+                    frappe.confirm(__('Are you sure you want to finalize and submit these scores?'), function() {
+                        frm.set_value('status', 'Submitted');
+                        frm.set_value('submitted_on', frappe.datetime.now_datetime());
+                        frm.save();
+                    });
                 });
-            }).addClass('btn-primary');
+                $actions.prepend($btn);
+            }, 500);
         }
 
         // Admin override button: Reopen / Mark as Draft
