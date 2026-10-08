@@ -23,11 +23,7 @@ def evaluation_has_permission(doc, ptype="read", user=None):
     # Users can only write/submit THEIR OWN evaluations
     if doc.evaluator == user:
         if ptype in ["write", "submit", "delete"]:
-            # Chief mentors can always edit their own evaluations (bypassing round/submit locks)
-            if "Chief Mentor" in roles:
-                return True
-                
-            # Regular mentors are locked out if the round is closed or they already submitted
+            # Regular mentors and Chief Mentors are locked out if the round is closed or they already submitted
             round_status = frappe.db.get_value("Hackathon Round", doc.round, "status")
             if round_status != "Open":
                 return False

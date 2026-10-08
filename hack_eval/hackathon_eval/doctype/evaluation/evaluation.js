@@ -22,6 +22,14 @@ frappe.ui.form.on('Evaluation', {
             frm.fields_dict.scores.grid.wrapper.find('.grid-settings, .grid-custom-setting, .configure-columns').hide();
         }, 200);
 
+        // Setup style to hide the pencil icon when locked
+        if ($('style#hide-pencil-css').length === 0) {
+            $('<style id="hide-pencil-css">.hide-pencil .grid-row-open { display: none !important; }</style>').appendTo('head');
+        }
+        
+        // Default to not hiding pencil, unless locked below
+        frm.fields_dict.scores.wrapper.removeClass('hide-pencil');
+
         // Check Round Status for Level Gating
         if (frm.doc.round && !frm.is_new()) {
             frappe.db.get_value('Hackathon Round', frm.doc.round, 'status', function(r) {
@@ -31,20 +39,23 @@ frappe.ui.form.on('Evaluation', {
                     if (frm.doc.evaluator !== frappe.session.user) {
                         frm.disable_save();
                         frm.set_read_only();
+                        frm.fields_dict.scores.wrapper.addClass('hide-pencil');
                         frm.dashboard.set_headline_alert(
                             __('Read Only: You can view this evaluation, but you cannot edit scores assigned to another mentor.'),
                             'yellow'
                         );
-                    } else if (round_status !== 'Open' && !frappe.user_roles.includes('Chief Mentor')) {
+                    } else if (round_status !== 'Open') {
                         frm.disable_save();
                         frm.set_read_only();
+                        frm.fields_dict.scores.wrapper.addClass('hide-pencil');
                         frm.dashboard.set_headline_alert(
                             __('Scoring Locked: Round {0} is currently {1}. Mentors cannot edit evaluations.', [frm.doc.round, round_status]),
                             'red'
                         );
-                    } else if (frm.doc.status === 'Submitted' && !frappe.user_roles.includes('Chief Mentor')) {
+                    } else if (frm.doc.status === 'Submitted') {
                         frm.disable_save();
                         frm.set_read_only();
+                        frm.fields_dict.scores.wrapper.addClass('hide-pencil');
                         frm.dashboard.set_headline_alert(
                             __('Evaluation Submitted: This evaluation is locked. Only Admins can modify submitted scores.'),
                             'green'
@@ -72,6 +83,9 @@ frappe.ui.form.on('Evaluation', {
                 frm.save();
             });
         }
+
+        // Show the initial total score in the header
+        calculate_total(frm);
     },
     
     round: function(frm) {
@@ -91,7 +105,7 @@ frappe.ui.form.on('Evaluation Score', {
                 let $del_btn = $heading.find('.grid-delete-row');
                 
                 if ($heading.find('.btn-save-row').length === 0) {
-                    $('<button class="btn btn-xs btn-primary btn-save-row" style="margin-right: 5px; margin-top: -3px;">Save</button>')
+                    $('<button class="btn btn-xs btn-default btn-save-row" style="margin-right: 5px; margin-top: -3px;">Close</button>')
                         .insertBefore($del_btn)
                         .on('click', function(e) {
                             e.preventDefault();
@@ -122,6 +136,9 @@ function calculate_total(frm) {
         total += flt(row.score);
     });
     frm.set_value('total_score', total);
+    
+    // Live update the score in the panel header
+    frm.page.set_indicator(__('Total Score: {0}', [total]), 'blue');
 }
 
 function populate_criteria(frm) {
