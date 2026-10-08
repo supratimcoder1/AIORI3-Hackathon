@@ -78,21 +78,15 @@ frappe.ui.form.on('Evaluation', {
             });
         }
 
-        // Action button to Submit Evaluation (Forced DOM injection to bypass Frappe UI hiding quirks)
+        // Action button to Submit Evaluation
         if (!frm.is_new() && frm.doc.status !== 'Submitted') {
-            setTimeout(() => {
-                let $actions = $('.page-actions');
-                $actions.find('.custom-submit-btn').remove();
-                let $btn = $('<button class="custom-submit-btn btn btn-primary btn-sm" style="margin-right: 10px;">Submit Evaluation</button>');
-                $btn.on('click', function() {
-                    frappe.confirm(__('Are you sure you want to finalize and submit these scores?'), function() {
-                        frm.set_value('status', 'Submitted');
-                        frm.set_value('submitted_on', frappe.datetime.now_datetime());
-                        frm.save();
-                    });
+            frm.add_custom_button(__('Submit Evaluation'), function() {
+                frappe.confirm(__('Are you sure you want to finalize and submit these scores?'), function() {
+                    frm.set_value('status', 'Submitted');
+                    frm.set_value('submitted_on', frappe.datetime.now_datetime());
+                    frm.save();
                 });
-                $actions.prepend($btn);
-            }, 500);
+            }).addClass('btn-primary');
         }
 
         // Admin override button: Reopen / Mark as Draft
@@ -102,9 +96,6 @@ frappe.ui.form.on('Evaluation', {
                 frm.save();
             });
         }
-
-        // Show the initial total score in the header
-        calculate_total(frm);
     },
     
     round: function(frm) {
@@ -155,13 +146,6 @@ function calculate_total(frm) {
         total += flt(row.score);
     });
     frm.set_value('total_score', total);
-    
-    // Inject custom persistent pill into the form header so Frappe's native indicators don't overwrite it
-    setTimeout(() => {
-        let $header = $('.page-head .page-title');
-        $header.find('.custom-total-score-badge').remove();
-        $header.append(`<span class="custom-total-score-badge badge" style="background-color: var(--blue-500); color: white; font-size: 14px; margin-left: 10px;">Total Score: ${total}</span>`);
-    }, 100);
 }
 
 function populate_criteria(frm) {
