@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"header_1\",\"type\":\"header\",\"data\":{\"text\":\"Management\",\"col\":12}},{\"id\":\"sc_teams\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Hackathon Team\",\"col\":3}},{\"id\":\"sc_rounds\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Hackathon Round\",\"col\":3}},{\"id\":\"sc_mentor_profile\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mentor Profile\",\"col\":3}},{\"id\":\"header_reports\",\"type\":\"header\",\"data\":{\"text\":\"Reports\",\"col\":12}},{\"id\":\"sc_lb\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Round Leaderboard\",\"col\":3}},{\"id\":\"sc_ep\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Evaluator Progress\",\"col\":3}},{\"id\":\"sc_cc\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Coverage Check\",\"col\":3}}]",
+ "content": "[{\"id\":\"header_1\",\"type\":\"header\",\"data\":{\"text\":\"Management\",\"col\":12}},{\"id\":\"sc_teams\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Hackathon Team\",\"col\":3}},{\"id\":\"sc_rounds\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Hackathon Round\",\"col\":3}},{\"id\":\"sc_mentor_profile\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mentor Profile\",\"col\":3}},{\"id\":\"sc_team_evals\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Team Evaluations\",\"col\":3}},{\"id\":\"header_reports\",\"type\":\"header\",\"data\":{\"text\":\"Reports\",\"col\":12}},{\"id\":\"sc_lb\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Round Leaderboard\",\"col\":3}},{\"id\":\"sc_ep\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Evaluator Progress\",\"col\":3}},{\"id\":\"sc_cc\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Coverage Check\",\"col\":3}}]",
  "creation": "2026-10-07 00:50:15.949817",
  "custom_blocks": [],
  "docstatus": 0,
@@ -49,6 +49,12 @@
    "label": "Mentor Profile",
    "link_to": "Mentor Profile",
    "type": "DocType"
+  },
+  {
+   "doc_view": "",
+   "label": "Team Evaluations",
+   "link_to": "Team Evaluations",
+   "type": "Report"
   },
   {
    "doc_view": "",
