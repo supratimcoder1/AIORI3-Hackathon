@@ -41,6 +41,14 @@ class Evaluation(Document):
             
         self.total_score = total
 
+    def before_save(self):
+        if self.ready_to_submit and self.status != "Submitted":
+            # Set to submitted
+            self.status = "Submitted"
+            self.submitted_on = frappe.utils.now_datetime()
+            # Clear the checkbox so it doesn't stay checked if reopened to draft
+            self.ready_to_submit = 0
+
     def on_submit(self):
         self.status = "Submitted"
         self.submitted_on = frappe.utils.now_datetime()

@@ -52,6 +52,14 @@
    "in_standard_filter": 1
   },
   {
+   "fieldname": "ready_to_submit",
+   "fieldtype": "Check",
+   "label": "Ready to Submit",
+   "description": "Check this and click Save to permanently submit this evaluation.",
+   "depends_on": "eval:doc.status!='Submitted'",
+   "in_list_view": 0
+  },
+  {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
@@ -89,7 +97,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-09 00:20:00.000000",
+ "modified": "2026-10-09 00:45:00.000000",
  "modified_by": "Administrator",
  "module": "Hackathon Eval",
  "name": "Evaluation",

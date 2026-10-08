@@ -81,44 +81,13 @@ frappe.ui.form.on('Evaluation', {
             });
         }
 
-        function setup_submit_button() {
-            if (frm.is_new() || frm.doc.status === 'Submitted') {
-                frm.page.clear_secondary_action();
-                return;
-            }
-
-            // Only assigned mentor or Admin can submit
-            if (!is_admin && evaluator_email && session_email && evaluator_email !== session_email) {
-                frm.page.clear_secondary_action();
-                return;
-            }
-
-            let submit_action = function() {
-                frappe.confirm(__('Are you sure you want to finalize and submit these scores?'), function() {
-                    frm.set_value('status', 'Submitted');
-                    frm.set_value('submitted_on', frappe.datetime.now_datetime());
-                    frm.save();
-                });
-            };
-
-            // 1. Primary placement in Standard Actions (beside Save button)
-            let $sec_btn = frm.page.set_secondary_action(__('Submit Evaluation'), submit_action);
-            if ($sec_btn) {
-                $sec_btn.removeClass('btn-default hide')
-                        .addClass('btn-primary')
-                        .css({'display': 'inline-flex', 'margin-right': '6px'});
-            }
-
-            // 2. Also register in custom actions & ensure unhidden
-            frm.add_custom_button(__('Submit Evaluation'), submit_action);
-            if (frm.page.custom_actions) {
-                frm.page.custom_actions.removeClass('hide hidden-xs hidden-md');
-            }
+        function clear_submit_buttons() {
+            frm.page.clear_secondary_action();
         }
 
-        // Setup button immediately and on slight delay to handle async header redraws
-        setup_submit_button();
-        setTimeout(setup_submit_button, 150);
+        // Keep secondary action clear to avoid confusion, since we now use the checkbox
+        clear_submit_buttons();
+        setTimeout(clear_submit_buttons, 150);
 
         // Admin override button: Reopen / Mark as Draft
         if (is_admin && frm.doc.status === 'Submitted') {
