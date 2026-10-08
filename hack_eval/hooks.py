@@ -32,6 +32,4 @@ boot_session = "hack_eval.hackathon_eval.boot.boot_session"
 
 app_include_js = "/assets/hack_eval/js/hack_eval.js"
 
-fixtures = [
-    "Hackathon Round"
-]
+fixtures = []
