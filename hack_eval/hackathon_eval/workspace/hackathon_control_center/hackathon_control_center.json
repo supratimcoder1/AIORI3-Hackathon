@@ -54,6 +54,7 @@
    "doc_view": "",
    "label": "Team Evaluations",
    "link_to": "Team Evaluations",
+   "report_ref_doctype": "Evaluation",
    "type": "Report"
   },
   {
