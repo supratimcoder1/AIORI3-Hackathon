@@ -64,7 +64,6 @@
    "fieldtype": "Data",
    "label": "Name your Team",
    "reqd": 1,
-   "unique": 1,
    "in_standard_filter": 1,
    "in_list_view": 1
   },
@@ -72,6 +71,7 @@
    "fieldname": "team_code",
    "fieldtype": "Data",
    "label": "Team Code",
+   "unique": 1,
    "in_list_view": 1,
    "in_standard_filter": 1
   },

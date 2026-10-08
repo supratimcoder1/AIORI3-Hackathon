@@ -1,7 +1,24 @@
 import frappe
 from frappe.model.document import Document
+import re
+
+def clean_email(email_str):
+    if not email_str: return email_str
+    # Extract the first valid email from the string
+    match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', str(email_str))
+    if match:
+        return match.group(0).lower()
+    return email_str
 
 class HackathonTeam(Document):
+    def before_validate(self):
+        # Aggressively clean emails before Frappe's built-in Email fieldtype validation crashes the import
+        self.member_1_email = clean_email(self.member_1_email)
+        self.member_2_email = clean_email(self.member_2_email)
+        self.member_3_email = clean_email(self.member_3_email)
+        self.email_address_1 = clean_email(self.email_address_1)
+        self.email_address_2 = clean_email(self.email_address_2)
+
     def validate(self):
         self.validate_team_composition()
 
