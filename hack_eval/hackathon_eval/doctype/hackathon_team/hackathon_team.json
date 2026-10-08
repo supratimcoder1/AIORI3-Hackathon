@@ -129,7 +129,7 @@
   },
   {
    "fieldname": "member_1_expertise",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Team Member 1 -  Area of Expertise / Accomplishments"
   },
   {
@@ -159,7 +159,7 @@
   },
   {
    "fieldname": "member_2_expertise",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Team Member 2 -  Area of Expertise / Accomplishments"
   },
   {
@@ -189,7 +189,7 @@
   },
   {
    "fieldname": "member_3_expertise",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Team Member 3 -  Area of Expertise / Accomplishments"
   },
   {
