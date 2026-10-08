@@ -48,6 +48,9 @@ class Evaluation(Document):
             self.submitted_on = frappe.utils.now_datetime()
             # Clear the checkbox so it doesn't stay checked if reopened to draft
             self.ready_to_submit = 0
+        elif not self.ready_to_submit and self.status == "Pending":
+            # If they just save without submitting, mark it as Draft to show progress
+            self.status = "Draft"
 
     def on_submit(self):
         self.status = "Submitted"
