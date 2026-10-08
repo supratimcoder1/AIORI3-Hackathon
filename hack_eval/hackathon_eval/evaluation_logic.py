@@ -2,6 +2,15 @@ import frappe
 from frappe.utils import flt
 
 @frappe.whitelist()
+def reset_round(round_name):
+    frappe.only_for(["System Manager", "Hackathon Organizer"])
+    round_doc = frappe.get_doc("Hackathon Round", round_name)
+    round_doc.status = "Not Started"
+    round_doc.save(ignore_permissions=True)
+    frappe.db.commit()
+    return f"Round '{round_name}' has been reset to Not Started."
+
+@frappe.whitelist()
 def open_round(round_name):
     frappe.only_for(["System Manager", "Hackathon Organizer"])
     round_doc = frappe.get_doc("Hackathon Round", round_name)
@@ -18,11 +27,15 @@ def open_round(round_name):
         "current_level": round_num
     }, fields=["name", "problem_statement_area"])
     
-    # Get all active mentors mapped by their track
-    mentors = frappe.get_all("Mentor Profile", filters={"status": "Active"}, fields=["email", "track"])
+    # Get all active mentors mapped by their track, and separate out Chief Mentors
+    mentors = frappe.get_all("Mentor Profile", filters={"status": "Active"}, fields=["email", "track", "mentor_role"])
     mentors_by_track = {}
+    chief_mentors = []
+    
     for m in mentors:
-        if m.track:
+        if m.mentor_role == "Chief Mentor":
+            chief_mentors.append(m.email)
+        elif m.track:
             track_name = m.track.strip()
             if track_name not in mentors_by_track:
                 mentors_by_track[track_name] = []
@@ -34,7 +47,7 @@ def open_round(round_name):
         "6G and Future Networks": "6G & Future Networks"
     }
     for m in mentors:
-        if m.track and m.track.strip() in fallback_map:
+        if m.mentor_role != "Chief Mentor" and m.track and m.track.strip() in fallback_map:
             mentors_by_track[fallback_map[m.track.strip()]] = mentors_by_track.get(m.track.strip(), [])
     
     created_count = 0
@@ -42,7 +55,10 @@ def open_round(round_name):
         team_track = (team.problem_statement_area or "").strip()
         assigned_mentors = mentors_by_track.get(team_track, [])
         
-        for mentor_email in assigned_mentors:
+        # Combine track-specific regular mentors and ALL Chief Mentors for this team
+        all_evaluators = list(set(assigned_mentors + chief_mentors))
+        
+        for mentor_email in all_evaluators:
             exists = frappe.db.exists("Evaluation", {"team": team.name, "round": round_name, "evaluator": mentor_email})
             if not exists:
                 eval_doc = frappe.get_doc({
