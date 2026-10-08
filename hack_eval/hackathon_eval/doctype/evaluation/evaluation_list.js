@@ -3,11 +3,11 @@ frappe.listview_settings['Evaluation'] = {
 
     formatters: {
         total_score(val, df, doc) {
+            let score = val !== undefined && val !== null ? val : 0;
             if (doc.status === 'Submitted') {
-                let score = val !== undefined && val !== null ? val : 0;
-                return `<span class="bold">${score}</span>`;
+                return `<span class="bold text-success">${score}</span>`;
             }
-            return `<span class="text-muted">0</span>`;
+            return `<span class="text-muted">${score}</span>`;
         }
     },
 
