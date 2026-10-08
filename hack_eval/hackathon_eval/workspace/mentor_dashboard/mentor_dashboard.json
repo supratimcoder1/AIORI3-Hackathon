@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"header_1\",\"type\":\"header\",\"data\":{\"text\":\"Evaluations\",\"col\":12}},{\"id\":\"sc_evals_2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Evaluation\",\"col\":3}},{\"id\":\"sc_evals\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Team Evaluations\",\"col\":3}}]",
+ "content": "[{\"id\":\"header_1\",\"type\":\"header\",\"data\":{\"text\":\"Evaluations\",\"col\":12}},{\"id\":\"sc_evals\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Team Evaluations\",\"col\":3}}]",
  "creation": "2026-10-07 00:50:16.121797",
  "custom_blocks": [],
  "docstatus": 0,
@@ -41,13 +41,6 @@
    "link_to": "Team Evaluations",
    "report_ref_doctype": "Evaluation",
    "type": "Report"
-  },
-  {
-   "doc_view": "",
-   "label": "Evaluation",
-   "link_to": "Evaluation",
-   "stats_filter": "[[\"Evaluation\",\"status\",\"!=\",\"Submitted\"]]",
-   "type": "DocType"
   }
  ],
  "title": "Mentor Dashboard"
