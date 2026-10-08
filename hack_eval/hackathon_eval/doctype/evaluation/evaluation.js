@@ -19,7 +19,9 @@ frappe.ui.form.on('Evaluation', {
 
         // Hide settings gear from grid header
         setTimeout(() => {
-            frm.fields_dict.scores.grid.wrapper.find('.grid-settings, .grid-custom-setting, .configure-columns').hide();
+            if (frm.fields_dict.scores && frm.fields_dict.scores.grid && frm.fields_dict.scores.grid.wrapper) {
+                frm.fields_dict.scores.grid.wrapper.find('.grid-settings, .grid-custom-setting, .configure-columns').hide();
+            }
         }, 200);
 
         // Setup style to hide the pencil icon when locked
@@ -28,7 +30,12 @@ frappe.ui.form.on('Evaluation', {
         }
         
         // Default to not hiding pencil, unless locked below
-        frm.fields_dict.scores.wrapper.removeClass('hide-pencil');
+        if (frm.fields_dict.scores && frm.fields_dict.scores.wrapper) {
+            frm.fields_dict.scores.wrapper.removeClass('hide-pencil');
+        }
+
+        let evaluator_email = (frm.doc.evaluator || "").trim().toLowerCase();
+        let session_email = (frappe.session.user || "").trim().toLowerCase();
 
         // Check Round Status for Level Gating
         if (frm.doc.round && !frm.is_new()) {
@@ -36,10 +43,12 @@ frappe.ui.form.on('Evaluation', {
                 var round_status = r ? r.status : 'Closed';
                 if (!is_admin) {
                     // Chief mentors can see everything, but can only edit their own.
-                    if (frm.doc.evaluator !== frappe.session.user) {
+                    if (evaluator_email !== session_email) {
                         frm.disable_save();
                         frm.set_read_only();
-                        frm.fields_dict.scores.wrapper.addClass('hide-pencil');
+                        if (frm.fields_dict.scores && frm.fields_dict.scores.wrapper) {
+                            frm.fields_dict.scores.wrapper.addClass('hide-pencil');
+                        }
                         frm.dashboard.set_headline_alert(
                             __('Read Only: You can view this evaluation, but you cannot edit scores assigned to another mentor.'),
                             'yellow'
@@ -47,7 +56,9 @@ frappe.ui.form.on('Evaluation', {
                     } else if (round_status !== 'Open') {
                         frm.disable_save();
                         frm.set_read_only();
-                        frm.fields_dict.scores.wrapper.addClass('hide-pencil');
+                        if (frm.fields_dict.scores && frm.fields_dict.scores.wrapper) {
+                            frm.fields_dict.scores.wrapper.addClass('hide-pencil');
+                        }
                         frm.dashboard.set_headline_alert(
                             __('Scoring Locked: Round {0} is currently {1}. Mentors cannot edit evaluations.', [frm.doc.round, round_status]),
                             'red'
@@ -55,7 +66,9 @@ frappe.ui.form.on('Evaluation', {
                     } else if (frm.doc.status === 'Submitted') {
                         frm.disable_save();
                         frm.set_read_only();
-                        frm.fields_dict.scores.wrapper.addClass('hide-pencil');
+                        if (frm.fields_dict.scores && frm.fields_dict.scores.wrapper) {
+                            frm.fields_dict.scores.wrapper.addClass('hide-pencil');
+                        }
                         frm.dashboard.set_headline_alert(
                             __('Evaluation Submitted: This evaluation is locked. Only Admins can modify submitted scores.'),
                             'green'
@@ -66,7 +79,7 @@ frappe.ui.form.on('Evaluation', {
         }
 
         // Action button to Submit Evaluation
-        if (!frm.is_new() && frm.doc.status !== 'Submitted' && (is_admin || frm.doc.evaluator === frappe.session.user)) {
+        if (!frm.is_new() && frm.doc.status !== 'Submitted' && (is_admin || evaluator_email === session_email)) {
             frm.add_custom_button(__('Submit Evaluation'), function() {
                 frappe.confirm(__('Are you sure you want to finalize and submit these scores?'), function() {
                     frm.set_value('status', 'Submitted');
