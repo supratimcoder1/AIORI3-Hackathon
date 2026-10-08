@@ -137,8 +137,12 @@ function calculate_total(frm) {
     });
     frm.set_value('total_score', total);
     
-    // Live update the score in the panel header
-    frm.page.set_indicator(__('Total Score: {0}', [total]), 'blue');
+    // Inject custom persistent pill into the form header so Frappe's native indicators don't overwrite it
+    setTimeout(() => {
+        let $header = $('.page-head .page-title');
+        $header.find('.custom-total-score-badge').remove();
+        $header.append(`<span class="custom-total-score-badge badge" style="background-color: var(--blue-500); color: white; font-size: 14px; margin-left: 10px;">Total Score: ${total}</span>`);
+    }, 100);
 }
 
 function populate_criteria(frm) {
