@@ -70,8 +70,20 @@ class HackathonTeam(Document):
                         if t == team_track:
                             assigned_mentors.append(m.email)
                             
+                    # Build Conflict of Interest (COI) faculty list for this team
+                    faculty_emails = set()
+                    for i in range(1, 4):
+                        m_type = self.get(f"member_{i}_type")
+                        m_email = self.get(f"member_{i}_email")
+                        if m_type == "Faculty" and m_email:
+                            faculty_emails.add(m_email.strip().lower())
+                            
                     all_evaluators = list(set(assigned_mentors + chief_mentors))
                     for mentor_email in all_evaluators:
+                        # COI Check: Skip evaluation if the mentor is a faculty member of this team
+                        if mentor_email.strip().lower() in faculty_emails:
+                            continue
+                            
                         if not frappe.db.exists("Evaluation", {"team": self.name, "round": round_name, "evaluator": mentor_email}):
                             eval_doc = frappe.get_doc({
                                 "doctype": "Evaluation",

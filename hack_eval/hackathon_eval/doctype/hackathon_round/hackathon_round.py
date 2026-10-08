@@ -33,7 +33,12 @@ class HackathonRound(Document):
                 eligible_teams = frappe.get_all("Hackathon Team", filters={
                     "status": ["in", ["Active", "Finalist"]],
                     "current_level": round_num
-                }, fields=["name", "problem_statement_area"])
+                }, fields=[
+                    "name", "problem_statement_area",
+                    "member_1_type", "member_1_email",
+                    "member_2_type", "member_2_email",
+                    "member_3_type", "member_3_email"
+                ])
                 
                 mentors = frappe.get_all("Mentor Profile", filters={"status": "Active"}, fields=["email", "track"])
                 mentors_by_track = {}
@@ -54,14 +59,26 @@ class HackathonRound(Document):
                 for team in eligible_teams:
                     team_track = (team.problem_statement_area or "").strip()
                     assigned_mentors = mentors_by_track.get(team_track, [])
+                    
+                    # Build Conflict of Interest (COI) faculty list for this team
+                    faculty_emails = set()
+                    for i in range(1, 4):
+                        m_type = team.get(f"member_{i}_type")
+                        m_email = team.get(f"member_{i}_email")
+                        if m_type == "Faculty" and m_email:
+                            faculty_emails.add(m_email.strip().lower())
+                            
                     for mentor_email in assigned_mentors:
+                        # COI Check: Skip evaluation if the mentor is a faculty member of this team
+                        if mentor_email.strip().lower() in faculty_emails:
+                            continue
+                            
                         if not frappe.db.exists("Evaluation", {"team": team.name, "round": self.name, "evaluator": mentor_email}):
                             eval_doc = frappe.get_doc({
                                 "doctype": "Evaluation",
                                 "team": team.name,
                                 "round": self.name,
                                 "evaluator": mentor_email,
-                                "evaluator_type": "Mentor",
                                 "status": "Pending"
                             })
                             for rc in self.criteria:
