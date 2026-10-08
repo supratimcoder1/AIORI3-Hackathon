@@ -66,10 +66,13 @@ def execute(filters=None):
         team_name = team.name
         evals = team_evals.get(team_name, [])
         
-        # Calculate Cumulative Score across ALL rounds live
+        # Separate submitted vs all evaluations
+        submitted_evals = [e for e in evals if e.status == "Submitted"]
+        
+        # Calculate Cumulative Score across ALL rounds live (using ONLY submitted)
         round_totals = {}
         round_counts = {}
-        for e in evals:
+        for e in submitted_evals:
             rnd = e.round
             if rnd not in round_totals:
                 round_totals[rnd] = 0.0
@@ -88,8 +91,12 @@ def execute(filters=None):
         flag_disagreement = 0
         
         if round_name:
+            # All provisioned evals for this round
             current_evals = [e for e in evals if e.round == round_name]
-            scores = [float(e.total_score or 0.0) for e in current_evals]
+            
+            # Only submitted evals for scoring
+            current_submitted = [e for e in submitted_evals if e.round == round_name]
+            scores = [float(e.total_score or 0.0) for e in current_submitted]
             
             if len(scores) > 0:
                 round_score = sum(scores) / len(scores)
@@ -97,7 +104,7 @@ def execute(filters=None):
                 if spread >= threshold:
                     flag_disagreement = 1
                     
-            submitted = len([e for e in current_evals if e.status == "Submitted"])
+            submitted = len(current_submitted)
             if submitted < len(current_evals):
                 flag_incomplete = 1
         else:

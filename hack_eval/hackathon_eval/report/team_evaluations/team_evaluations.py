@@ -81,7 +81,7 @@ def get_data(filters):
             t.problem_statement_area as track,
             e.round,
             t.status as status,
-            ROUND(AVG(e.total_score), 2) as average_score
+            ROUND(IFNULL(AVG(CASE WHEN e.status = 'Submitted' THEN e.total_score ELSE NULL END), 0), 3) as average_score
         FROM 
             `tabEvaluation` e
         JOIN 

@@ -27,6 +27,7 @@ def get_data(filters):
             t.team_code as team_code,
             ev.team,
             ev.round,
+            ev.status as ev_status,
             ev.name as evaluation,
             ev.evaluator,
             SUM(es.score) as score,
@@ -42,10 +43,13 @@ def get_data(filters):
     data = list(frappe.db.sql(sql, as_dict=True))
     
     if data:
-        total_score = sum(d.get("score") or 0.0 for d in data)
-        total_max = sum(d.get("max_score") or 0.0 for d in data)
-        avg_score = total_score / len(data)
-        avg_max = total_max / len(data)
+        submitted_data = [d for d in data if d.get("ev_status") == "Submitted"]
+        total_score = sum(d.get("score") or 0.0 for d in submitted_data)
+        total_max = sum(d.get("max_score") or 0.0 for d in submitted_data)
+        valid_count = len(submitted_data) if submitted_data else 1
+        
+        avg_score = total_score / valid_count
+        avg_max = total_max / valid_count
         
         # Spacer row
         data.append({
@@ -92,7 +96,7 @@ def execute(filters=None):
                 SUM(es.score) as total_eval_score
             FROM `tabEvaluation` ev
             JOIN `tabEvaluation Score` es ON es.parent = ev.name
-            WHERE ev.team = %s
+            WHERE ev.team = %s AND ev.status = 'Submitted'
             GROUP BY ev.round, ev.evaluator
         """
         all_evals = frappe.db.sql(live_sql, team_name, as_dict=True)

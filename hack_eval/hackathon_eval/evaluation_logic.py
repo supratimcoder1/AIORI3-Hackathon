@@ -159,7 +159,7 @@ def recompute_round_results(round_name):
     frappe.only_for(["System Manager", "Hackathon Organizer"])
     round_doc = frappe.get_doc("Hackathon Round", round_name)
     
-    evaluations = frappe.get_all("Evaluation", filters={"round": round_name, "status": "Submitted"}, fields=["name", "team", "evaluator_type"])
+    evaluations = frappe.get_all("Evaluation", filters={"round": round_name, "status": "Submitted"}, fields=["name", "team"])
     teams = frappe.get_all("Hackathon Team", filters={"status": ["in", ["Active", "Finalist", "Winner", "Eliminated"]]})
     
     disagreement_threshold = flt(frappe.db.get_single_value("Hackathon Settings", "disagreement_threshold") or 3.0)
