@@ -115,8 +115,7 @@
   {
    "fieldname": "member_1_email",
    "fieldtype": "Data",
-   "label": "Tema Member 1 - Email",
-   "options": "Email"
+   "label": "Tema Member 1 - Email"
   },
   {
    "fieldname": "member_1_contact",
@@ -146,8 +145,7 @@
   {
    "fieldname": "member_2_email",
    "fieldtype": "Data",
-   "label": "Team Member 2 - Email",
-   "options": "Email"
+   "label": "Team Member 2 - Email"
   },
   {
    "fieldname": "member_2_contact",
@@ -177,8 +175,7 @@
   {
    "fieldname": "member_3_email",
    "fieldtype": "Data",
-   "label": "Team Member 3 - Email",
-   "options": "Email"
+   "label": "Team Member 3 - Email"
   },
   {
    "fieldname": "member_3_contact",
