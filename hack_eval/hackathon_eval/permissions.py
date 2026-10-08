@@ -11,10 +11,23 @@ def get_evaluation_permission_query(user):
 def evaluation_has_permission(doc, ptype="read", user=None):
     if not user: user = frappe.session.user
     roles = frappe.get_roles(user)
-    if "System Manager" in roles or "Hackathon Organizer" in roles or "Chief Mentor" in roles or user == "Administrator":
+    
+    # Admins and Organizers have full access globally
+    if "System Manager" in roles or "Hackathon Organizer" in roles or user == "Administrator":
         return True
+        
+    # Chief Mentors can read all evaluations globally
+    if ptype == "read" and "Chief Mentor" in roles:
+        return True
+        
+    # Users can only write/submit THEIR OWN evaluations
     if doc.evaluator == user:
         if ptype in ["write", "submit", "delete"]:
+            # Chief mentors can always edit their own evaluations (bypassing round/submit locks)
+            if "Chief Mentor" in roles:
+                return True
+                
+            # Regular mentors are locked out if the round is closed or they already submitted
             round_status = frappe.db.get_value("Hackathon Round", doc.round, "status")
             if round_status != "Open":
                 return False
@@ -23,6 +36,7 @@ def evaluation_has_permission(doc, ptype="read", user=None):
                 if db_status == "Submitted":
                     return False
         return True
+        
     return False
 
 def get_team_permission_query(user):
