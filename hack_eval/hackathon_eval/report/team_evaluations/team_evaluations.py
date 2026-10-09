@@ -86,7 +86,7 @@ def get_data(filters):
         
     sql = f"""
         SELECT 
-            COALESCE(NULLIF(t.team_code, ''), t.name) as team_code,
+            IFNULL(t.team_code, '') as team_code,
             t.name as team_link,
             t.team_name,
             COALESCE(MAX(CASE WHEN e.evaluator = %(user)s THEN e.name ELSE NULL END), MAX(e.name)) as evaluation_id,
@@ -98,7 +98,7 @@ def get_data(filters):
         FROM 
             `tabEvaluation` e
         JOIN 
-            `tabHackathon Team` t ON (e.team = t.name OR e.team = t.team_code)
+            `tabHackathon Team` t ON (e.team = t.name)
         {where_clause}
         GROUP BY 
             t.name, t.team_code, t.team_name, t.valid_composition, t.problem_statement_area, e.round, t.status

@@ -77,7 +77,7 @@ class HackathonRound(Document):
                             eval_doc = frappe.get_doc({
                                 "doctype": "Evaluation",
                                 "team": team.name,
-                                "team_code": team.team_code or team.name,
+                                "team_code": team.team_code or "",
                                 "team_name": team.team_name or "",
                                 "round": self.name,
                                 "evaluator": mentor_email,

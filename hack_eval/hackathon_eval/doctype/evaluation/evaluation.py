@@ -27,7 +27,7 @@ class Evaluation(Document):
             t_data = frappe.db.get_value("Hackathon Team", self.team, ["team_code", "team_name"], as_dict=True)
             if t_data:
                 if not self.team_code:
-                    self.team_code = t_data.team_code or self.team
+                    self.team_code = t_data.team_code or ""
                 if not self.team_name:
                     self.team_name = t_data.team_name or ""
 

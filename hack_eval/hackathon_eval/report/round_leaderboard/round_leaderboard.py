@@ -127,7 +127,9 @@ def execute(filters=None):
             else:
                 outcome = "Pending"
             
-        team_code_val = (team.team_code or "").strip() or team_id
+        team_code_val = (team.team_code or "").strip()
+        if team_code_val.startswith("TEAM-"):
+            team_code_val = ""
         data.append({
             "team_code": team_code_val,
             "team": team_id,

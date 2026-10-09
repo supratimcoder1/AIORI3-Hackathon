@@ -236,6 +236,12 @@ frappe.listview_settings['Hackathon Team'] = {
         cumulative_score(val, df, doc) {
             let score = flt(val);
             return `<span class="bold" style="color: ${score > 0 ? '#2490ef' : '#888'}; font-size: 12px;">${score.toFixed(3)}</span>`;
+        },
+        team_code(val, df, doc) {
+            if (!val || val.startsWith('TEAM-')) {
+                return `<span class="text-muted">-</span>`;
+            }
+            return `<span class="bold" style="color: var(--text-color);">${frappe.utils.escape_html(val)}</span>`;
         }
     },
 

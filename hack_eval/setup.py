@@ -94,10 +94,14 @@ def ensure_rounds_exist():
 
 def backfill_evaluation_team_codes():
     frappe.db.sql("""
+        UPDATE `tabHackathon Team`
+        SET team_code = ''
+        WHERE team_code = name OR team_code LIKE 'TEAM-%'
+    """)
+    frappe.db.sql("""
         UPDATE `tabEvaluation` e
-        JOIN `tabHackathon Team` t ON (e.team = t.name OR e.team = t.team_code)
-        SET e.team_code = t.team_code, e.team_name = t.team_name
-        WHERE IFNULL(e.team_code, '') = '' OR IFNULL(e.team_name, '') = ''
+        JOIN `tabHackathon Team` t ON e.team = t.name
+        SET e.team_code = IFNULL(t.team_code, ''), e.team_name = IFNULL(t.team_name, '')
     """)
     frappe.db.commit()
 

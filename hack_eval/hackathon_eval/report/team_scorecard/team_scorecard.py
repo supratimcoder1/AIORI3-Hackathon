@@ -24,7 +24,7 @@ def get_data(filters):
     
     sql = f"""
         SELECT
-            COALESCE(NULLIF(t.team_code, ''), t.name) as team_code,
+            IFNULL(t.team_code, '') as team_code,
             t.team_name as team_name,
             ev.team,
             ev.round,
