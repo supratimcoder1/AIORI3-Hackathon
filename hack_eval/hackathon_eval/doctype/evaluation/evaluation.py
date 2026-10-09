@@ -65,6 +65,24 @@ class Evaluation(Document):
             # If they just save without submitting, mark it as Draft to show progress
             self.status = "Draft"
 
+    def on_update(self):
+        if self.team:
+            from hack_eval.hackathon_eval.evaluation_logic import sync_team_scores
+            sync_team_scores(self.team)
+
     def on_submit(self):
         self.status = "Submitted"
         self.submitted_on = frappe.utils.now_datetime()
+        if self.team:
+            from hack_eval.hackathon_eval.evaluation_logic import sync_team_scores
+            sync_team_scores(self.team)
+
+    def on_cancel(self):
+        if self.team:
+            from hack_eval.hackathon_eval.evaluation_logic import sync_team_scores
+            sync_team_scores(self.team)
+
+    def on_trash(self):
+        if self.team:
+            from hack_eval.hackathon_eval.evaluation_logic import sync_team_scores
+            sync_team_scores(self.team)

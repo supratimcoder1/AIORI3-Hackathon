@@ -395,3 +395,176 @@ def sanitize_request_params():
             frappe.local.form_dict["export_in_background"] = 0
 
 
+@frappe.whitelist()
+def sync_team_scores(team_name):
+    """
+    Recalculates round scores (level1_score, level2_score, level3_score) and
+    cumulative_score (Average Score) for a Hackathon Team based on all Submitted evaluations.
+    Updates Hackathon Team and Team Round Result in MariaDB.
+    """
+    if not team_name:
+        return None
+
+    # Handle if team identifier is team_code or team_name instead of docname
+    if not frappe.db.exists("Hackathon Team", team_name):
+        matched = frappe.db.get_value("Hackathon Team", {"team_code": team_name}, "name")
+        if not matched:
+            matched = frappe.db.get_value("Hackathon Team", {"team_name": team_name}, "name")
+        if not matched:
+            return None
+        team_name = matched
+
+    # Query submitted evaluations for this team
+    submitted_evals = frappe.db.sql("""
+        SELECT name, round, total_score
+        FROM `tabEvaluation`
+        WHERE team = %(team)s AND status = 'Submitted'
+    """, {"team": team_name}, as_dict=True)
+
+    # Fetch rounds mapping (round_name -> round_number)
+    rounds_data = frappe.get_all("Hackathon Round", fields=["round_name", "round_number"])
+    round_num_map = {r.round_name: r.round_number for r in rounds_data}
+    round_num_map.setdefault("Level 1", 1)
+    round_num_map.setdefault("Level 2", 2)
+    round_num_map.setdefault("Level 3", 3)
+
+    # Fetch active score adjustments for this team
+    adjustments = frappe.get_all(
+        "Score Adjustment",
+        filters={"team": team_name, "is_active": 1},
+        fields=["round", "criterion", "adjusted_score"]
+    )
+    adj_by_round = {}
+    for a in adjustments:
+        if a.round not in adj_by_round:
+            adj_by_round[a.round] = {}
+        if a.criterion:
+            adj_by_round[a.round][a.criterion] = flt(a.adjusted_score)
+
+    # Group submitted evaluations by round
+    evals_by_round = {}
+    for ev in submitted_evals:
+        rnd = ev.round
+        if rnd not in evals_by_round:
+            evals_by_round[rnd] = []
+        evals_by_round[rnd].append(ev)
+
+    scores_by_level = {1: 0.0, 2: 0.0, 3: 0.0}
+
+    for rnd, ev_list in evals_by_round.items():
+        if not ev_list:
+            continue
+        level_num = round_num_map.get(rnd)
+        if not level_num or level_num not in scores_by_level:
+            continue
+
+        adj_map = adj_by_round.get(rnd, {})
+        if adj_map:
+            # Criterion-level adjustments present: calculate effective criterion scores
+            eval_names = [e.name for e in ev_list]
+            c_scores = {}
+            if eval_names:
+                score_rows = frappe.db.sql("""
+                    SELECT criterion, score
+                    FROM `tabEvaluation Score`
+                    WHERE parent IN %(eval_names)s
+                """, {"eval_names": tuple(eval_names)}, as_dict=True)
+                for row in score_rows:
+                    c_scores.setdefault(row.criterion, []).append(flt(row.score))
+
+            total_round_score = 0.0
+            for c, sc_vals in c_scores.items():
+                avg_sc = sum(sc_vals) / len(sc_vals) if sc_vals else 0.0
+                eff_sc = adj_map.get(c, avg_sc)
+                total_round_score += eff_sc
+            scores_by_level[level_num] = round(total_round_score, 3)
+        else:
+            # Arithmetic average of total_score across submitted mentor evaluations
+            avg_score = sum(flt(e.total_score) for e in ev_list) / len(ev_list)
+            scores_by_level[level_num] = round(avg_score, 3)
+
+    l1 = scores_by_level[1]
+    l2 = scores_by_level[2]
+    l3 = scores_by_level[3]
+    cumulative = round(l1 + l2 + l3, 3)
+
+    # Update Hackathon Team scores directly
+    frappe.db.set_value("Hackathon Team", team_name, {
+        "level1_score": l1,
+        "level2_score": l2,
+        "level3_score": l3,
+        "cumulative_score": cumulative
+    })
+
+    # Also keep Team Round Result synchronized for rounds that have evaluations or existing results
+    all_team_results = frappe.get_all("Team Round Result", filters={"team": team_name}, fields=["name", "round"])
+    existing_rounds = {tr.round for tr in all_team_results}
+
+    for tr in all_team_results:
+        lvl = round_num_map.get(tr.round)
+        r_score = scores_by_level.get(lvl, 0.0)
+        ev_list = evals_by_round.get(tr.round, [])
+        expected = frappe.db.count("Evaluation", {"team": team_name, "round": tr.round})
+        frappe.db.set_value("Team Round Result", tr.name, {
+            "round_score": r_score,
+            "cumulative_score": cumulative,
+            "evaluations_submitted": len(ev_list),
+            "evaluations_expected": expected,
+            "flag_incomplete": 1 if len(ev_list) < expected else 0
+        })
+
+    for rnd, ev_list in evals_by_round.items():
+        if rnd not in existing_rounds:
+            lvl = round_num_map.get(rnd)
+            r_score = scores_by_level.get(lvl, 0.0)
+            expected = frappe.db.count("Evaluation", {"team": team_name, "round": rnd})
+            try:
+                res_doc = frappe.get_doc({
+                    "doctype": "Team Round Result",
+                    "team": team_name,
+                    "round": rnd,
+                    "round_score": r_score,
+                    "cumulative_score": cumulative,
+                    "evaluations_submitted": len(ev_list),
+                    "evaluations_expected": expected,
+                    "flag_incomplete": 1 if len(ev_list) < expected else 0,
+                    "review_status": "Not Required"
+                })
+                res_doc.insert(ignore_permissions=True)
+            except Exception:
+                pass
+
+    return {
+        "team": team_name,
+        "level1_score": l1,
+        "level2_score": l2,
+        "level3_score": l3,
+        "cumulative_score": cumulative
+    }
+
+
+@frappe.whitelist()
+def sync_all_team_scores(all_teams=False):
+    """
+    Synchronizes scores for teams with evaluations or existing non-zero scores,
+    or for all teams if all_teams=True.
+    """
+    if all_teams:
+        teams = frappe.get_all("Hackathon Team", pluck="name")
+    else:
+        teams = frappe.db.sql_list("""
+            SELECT DISTINCT team FROM `tabEvaluation` WHERE team IS NOT NULL AND team != ''
+            UNION
+            SELECT name FROM `tabHackathon Team` WHERE cumulative_score > 0 OR level1_score > 0 OR level2_score > 0 OR level3_score > 0
+        """)
+
+    count = 0
+    for t_name in teams:
+        sync_team_scores(t_name)
+        count += 1
+
+    frappe.db.commit()
+    return f"Successfully synchronized scores for {count} teams."
+
+
+

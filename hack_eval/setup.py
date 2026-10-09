@@ -38,6 +38,11 @@ def after_migrate():
     backfill_evaluation_team_codes()
     sync_custom_workspaces()
     hide_standard_workspaces()
+    sync_all_team_scores_on_migrate()
+
+def sync_all_team_scores_on_migrate():
+    from hack_eval.hackathon_eval.evaluation_logic import sync_all_team_scores
+    sync_all_team_scores()
 
 def ensure_rounds_exist():
     # Only create rounds if they do not already exist. Never overwrite existing round status!
