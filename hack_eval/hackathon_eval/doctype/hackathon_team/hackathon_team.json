@@ -8,6 +8,8 @@
  "field_order": [
   "team_name",
   "team_code",
+  "cumulative_score",
+  "evaluation_decision",
   "institution",
   "problem_statement_area",
   "valid_composition",
@@ -34,14 +36,12 @@
   "presentation_link",
   "repository_link",
   "status",
-  "evaluation_decision",
   "current_level",
   "eliminated_at_level",
   "final_position",
   "level1_score",
   "level2_score",
   "level3_score",
-  "cumulative_score",
   "city",
   "zone",
   "reason_for_problem_area",
@@ -75,6 +75,23 @@
    "unique": 1,
    "in_list_view": 1,
    "in_standard_filter": 1
+  },
+  {
+   "fieldname": "cumulative_score",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Average Score",
+   "read_only": 1
+  },
+  {
+   "default": "",
+   "fieldname": "evaluation_decision",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Evaluate",
+   "options": "\nLevel Up\nEliminate"
   },
   {
    "fieldname": "institution",
@@ -220,15 +237,6 @@
    "options": "Active\nEliminated\nFinalist\nWinner"
   },
   {
-   "default": "",
-   "fieldname": "evaluation_decision",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Evaluate",
-   "options": "\nLevel Up\nEliminate"
-  },
-  {
    "default": "1",
    "fieldname": "current_level",
    "fieldtype": "Int",
@@ -263,14 +271,6 @@
    "fieldname": "level3_score",
    "fieldtype": "Float",
    "label": "Level 3 Score",
-   "read_only": 1
-  },
-  {
-   "fieldname": "cumulative_score",
-   "fieldtype": "Float",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Average Score",
    "read_only": 1
   },
   {
@@ -356,7 +356,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-07 18:57:09.591289",
+ "modified": "2026-10-09 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "Hackathon Eval",
  "name": "Hackathon Team",
@@ -416,5 +416,5 @@
  "states": [],
  "title_field": "team_name",
  "track_changes": 1,
- "search_fields": "team_name,problem_statement_area,status"
+ "search_fields": "team_code,team_name,problem_statement_area,status"
 }

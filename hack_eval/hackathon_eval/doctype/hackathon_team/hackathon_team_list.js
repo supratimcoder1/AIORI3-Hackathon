@@ -4,47 +4,105 @@ frappe.listview_settings['Hackathon Team'] = {
     add_fields: ['team_code', 'status', 'current_level', 'cumulative_score', 'valid_composition', 'problem_statement_area', 'evaluation_decision'],
     
     onload(listview) {
+        frappe.listview_settings['Hackathon Team'].patch_listview(listview);
+        frappe.listview_settings['Hackathon Team'].bind_events(listview);
+    },
+
+    before_render() {
+        const listview = frappe.get_list_view('Hackathon Team');
+        if (listview) {
+            frappe.listview_settings['Hackathon Team'].patch_listview(listview);
+            frappe.listview_settings['Hackathon Team'].bind_events(listview);
+        }
+    },
+
+    bind_events(listview) {
+        if (!listview || !listview.wrapper) return;
+        
+        listview.wrapper.off('change.eval_decision').on('change.eval_decision', '.eval-decision-select', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            let team_name = $(this).attr('data-team') || $(this).data('team');
+            let decision = $(this).val();
+            let $select = $(this);
+
+            frappe.call({
+                method: 'frappe.client.set_value',
+                args: {
+                    doctype: 'Hackathon Team',
+                    name: team_name,
+                    fieldname: 'evaluation_decision',
+                    value: decision
+                },
+                callback: function(r) {
+                    if (!r.exc) {
+                        frappe.show_alert({
+                            message: __('Team {0} marked as {1}', [team_name, decision || 'Pending']),
+                            indicator: decision === 'Level Up' ? 'green' : (decision === 'Eliminate' ? 'red' : 'blue')
+                        }, 3);
+                        if (decision === 'Level Up') {
+                            $select.css({ 'color': '#28a745', 'border-color': '#28a745' });
+                        } else if (decision === 'Eliminate') {
+                            $select.css({ 'color': '#dc3545', 'border-color': '#dc3545' });
+                        } else {
+                            $select.css({ 'color': '#6c757d', 'border-color': '#d1d8dd' });
+                        }
+                    }
+                }
+            });
+            return false;
+        });
+    },
+
+    patch_listview(listview) {
+        if (!listview || !listview.columns) return;
+
         if (!listview.list_view_settings) {
             listview.list_view_settings = {};
         }
         listview.list_view_settings.total_fields = 10;
 
-        // Attach change listener for Evaluate dropdown
-        if (listview.$result && !listview._eval_decision_bound) {
-            listview._eval_decision_bound = true;
-            listview.$result.on('change', '.eval-decision-select', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                let team_name = $(this).data('team');
-                let decision = $(this).val();
-                let $select = $(this);
+        // Ensure user settings don't drop the new fields
+        let user_settings = frappe.get_user_settings('Hackathon Team');
+        if (user_settings && user_settings.fields) {
+            if (!user_settings.fields.includes('cumulative_score')) {
+                user_settings.fields.push('cumulative_score');
+            }
+            if (!user_settings.fields.includes('evaluation_decision')) {
+                user_settings.fields.push('evaluation_decision');
+            }
+        }
 
-                frappe.call({
-                    method: 'frappe.client.set_value',
-                    args: {
-                        doctype: 'Hackathon Team',
-                        name: team_name,
-                        fieldname: 'evaluation_decision',
-                        value: decision
-                    },
-                    callback: function(r) {
-                        if (!r.exc) {
-                            frappe.show_alert({
-                                message: __('Team {0} marked as {1}', [team_name, decision || 'Pending']),
-                                indicator: decision === 'Level Up' ? 'green' : (decision === 'Eliminate' ? 'red' : 'blue')
-                            }, 3);
-                            if (decision === 'Level Up') {
-                                $select.css({ 'color': '#28a745', 'border-color': '#28a745' });
-                            } else if (decision === 'Eliminate') {
-                                $select.css({ 'color': '#dc3545', 'border-color': '#dc3545' });
-                            } else {
-                                $select.css({ 'color': '#6c757d', 'border-color': '#d1d8dd' });
-                            }
-                        }
-                    }
-                });
-                return false;
-            });
+        const ensure_column = (fieldname, label, fieldtype, after_fieldname) => {
+            const exists = listview.columns.some(col => col.df && col.df.fieldname === fieldname);
+            if (!exists) {
+                const df = frappe.meta.get_docfield('Hackathon Team', fieldname) || {
+                    fieldname: fieldname,
+                    label: __(label),
+                    fieldtype: fieldtype
+                };
+                const new_col = { type: 'Field', df: df };
+                
+                let target_idx = -1;
+                if (after_fieldname) {
+                    target_idx = listview.columns.findIndex(col => 
+                        (col.type === after_fieldname) || (col.df && col.df.fieldname === after_fieldname)
+                    );
+                }
+                if (target_idx !== -1) {
+                    listview.columns.splice(target_idx + 1, 0, new_col);
+                } else {
+                    listview.columns.push(new_col);
+                }
+            }
+        };
+
+        ensure_column('team_code', 'Team Code', 'Data', 'Status');
+        ensure_column('cumulative_score', 'Average Score', 'Float', 'team_code');
+        ensure_column('evaluation_decision', 'Evaluate', 'Select', 'cumulative_score');
+
+        if (listview.$result && listview.$result.find('.list-row-head').length) {
+            listview.render_header(true);
         }
     },
 
