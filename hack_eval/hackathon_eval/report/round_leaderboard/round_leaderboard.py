@@ -3,8 +3,8 @@ import frappe
 def get_columns():
     return [
         {"label": "Rank", "fieldname": "rank", "fieldtype": "Int", "width": 60},
-        {"label": "Team Code", "fieldname": "team_code", "fieldtype": "Data", "width": 120},
-        {"label": "Team", "fieldname": "team", "fieldtype": "Link", "options": "Hackathon Team", "width": 200},
+        {"label": "Team", "fieldname": "team", "fieldtype": "Link", "options": "Hackathon Team", "width": 160},
+        {"label": "Team Name", "fieldname": "team_name", "fieldtype": "Data", "width": 180},
         {"label": "Track", "fieldname": "track", "fieldtype": "Data", "width": 180},
         {"label": "Valid Composition", "fieldname": "valid_composition", "fieldtype": "Check", "width": 80},
         {"label": "Round Score", "fieldname": "round_score", "fieldtype": "Float", "width": 100},
@@ -24,7 +24,7 @@ def execute(filters=None):
     
     # Query all active teams
     team_sql = """
-        SELECT name, team_code, problem_statement_area as track, valid_composition, status
+        SELECT name, team_code, team_name, problem_statement_area as track, valid_composition, status
         FROM `tabHackathon Team`
         WHERE status IN ('Active', 'Finalist', 'Winner', 'Eliminated')
     """
@@ -63,8 +63,8 @@ def execute(filters=None):
     data = []
     
     for team in teams:
-        team_name = team.name
-        evals = team_evals.get(team_name, [])
+        team_id = team.name
+        evals = team_evals.get(team_id, [])
         
         # Separate submitted vs all evaluations
         submitted_evals = [e for e in evals if e.status == "Submitted"]
@@ -111,8 +111,8 @@ def execute(filters=None):
             round_score = cumulative_score
             
         data.append({
-            "team_code": team.team_code,
-            "team": team_name,
+            "team": team_id,
+            "team_name": team.team_name,
             "track": team.track,
             "valid_composition": team.valid_composition,
             "round_score": round_score,
@@ -125,8 +125,8 @@ def execute(filters=None):
             "outcome": "Pending"
         })
         
-    # Sort automatically by Cumulative Score then Round Score
-    data.sort(key=lambda x: (x["cumulative_score"], x["round_score"]), reverse=True)
+    # Sort automatically by Cumulative Score then Round Score, and alphabetically by Team Code if score is 0
+    data.sort(key=lambda x: (-x["cumulative_score"], -x["round_score"], x["team"]))
     
     # Assign Rank
     for idx, row in enumerate(data):

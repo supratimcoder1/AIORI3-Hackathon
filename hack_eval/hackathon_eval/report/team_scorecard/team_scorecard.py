@@ -2,8 +2,8 @@ import frappe
 
 def get_columns():
     return [
-        {"label": "Team Code", "fieldname": "team_code", "fieldtype": "Data", "width": 120},
-        {"label": "Team", "fieldname": "team", "fieldtype": "Link", "options": "Hackathon Team", "width": 150},
+        {"label": "Team Code", "fieldname": "team", "fieldtype": "Link", "options": "Hackathon Team", "width": 150},
+        {"label": "Team Name", "fieldname": "team_name", "fieldtype": "Data", "width": 200},
         {"label": "Round", "fieldname": "round", "fieldtype": "Link", "options": "Hackathon Round", "width": 120},
         {"label": "Evaluation", "fieldname": "evaluation", "fieldtype": "Link", "options": "Evaluation", "width": 150},
         {"label": "Evaluator", "fieldname": "evaluator", "fieldtype": "Data", "width": 250},
@@ -24,7 +24,7 @@ def get_data(filters):
     
     sql = f"""
         SELECT
-            t.team_code as team_code,
+            t.team_name as team_name,
             ev.team,
             ev.round,
             ev.status as ev_status,
@@ -53,12 +53,12 @@ def get_data(filters):
         
         # Spacer row
         data.append({
-            "team_code": "", "team": "", "round": "", "evaluation": "", "evaluator": "", "score": None, "max_score": None
+            "team_name": "", "team": "", "round": "", "evaluation": "", "evaluator": "", "score": None, "max_score": None
         })
         
         # Grand Total row
         data.append({
-            "team_code": "",
+            "team_name": "",
             "team": "",
             "round": "",
             "evaluation": "",
@@ -69,7 +69,7 @@ def get_data(filters):
         
         # Average / Final Level Score row
         data.append({
-            "team_code": "",
+            "team_name": "",
             "team": "",
             "round": "",
             "evaluation": "",

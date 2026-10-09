@@ -5,7 +5,7 @@
  "engine": "InnoDB",
  "field_order": [
   "team",
-  "team_code",
+  "team_name",
   "round",
   "evaluator",
   "ready_to_submit",
@@ -26,10 +26,10 @@
    "in_standard_filter": 1
   },
   {
-   "fieldname": "team_code",
+   "fieldname": "team_name",
    "fieldtype": "Data",
-   "label": "Team Code",
-   "fetch_from": "team.team_code",
+   "label": "Team Name",
+   "fetch_from": "team.team_name",
    "read_only": 1,
    "in_list_view": 1,
    "in_standard_filter": 1

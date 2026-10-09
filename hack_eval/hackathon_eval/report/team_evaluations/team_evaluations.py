@@ -9,10 +9,11 @@ def execute(filters=None):
 def get_columns():
     return [
         {
-            "fieldname": "team_code",
+            "fieldname": "team_link",
             "label": "Team Code",
-            "fieldtype": "Data",
-            "width": 120
+            "fieldtype": "Link",
+            "options": "Hackathon Team",
+            "width": 150
         },
         {
             "fieldname": "team_name",
@@ -43,12 +44,6 @@ def get_columns():
             "label": "Average Score",
             "fieldtype": "Float",
             "width": 120
-        },
-        {
-            "fieldname": "team_link",
-            "label": "Team Link",
-            "fieldtype": "Data",
-            "hidden": 1
         }
     ]
 
@@ -75,9 +70,8 @@ def get_data(filters):
         
     sql = f"""
         SELECT 
-            t.team_code,
-            t.team_name,
             t.name as team_link,
+            t.team_name,
             t.problem_statement_area as track,
             e.round,
             t.status as status,
@@ -88,7 +82,7 @@ def get_data(filters):
             `tabHackathon Team` t ON e.team = t.name
         {where_clause}
         GROUP BY 
-            t.name, t.team_code, t.team_name, t.problem_statement_area, e.round, t.status
+            t.name, t.team_name, t.problem_statement_area, e.round, t.status
         ORDER BY 
             average_score DESC
     """
