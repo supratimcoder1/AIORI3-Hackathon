@@ -1,5 +1,6 @@
 frappe.listview_settings['Evaluation'] = {
-    add_fields: ['total_score', 'status'],
+    hide_name_filter: true,
+    add_fields: ['total_score', 'status', 'team_code', 'team_name'],
 
     formatters: {
         total_score(val, df, doc) {

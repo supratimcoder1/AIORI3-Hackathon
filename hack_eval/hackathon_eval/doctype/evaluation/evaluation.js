@@ -96,6 +96,32 @@ frappe.ui.form.on('Evaluation', {
                 frm.save();
             });
         }
+
+        // Ensure Team Code and Team Name are always populated immediately on form load
+        if (frm.doc.team && (!frm.doc.team_code || !frm.doc.team_name)) {
+            frappe.db.get_value('Hackathon Team', frm.doc.team, ['team_code', 'team_name'], function(r) {
+                if (r) {
+                    if (r.team_code && !frm.doc.team_code) frm.set_value('team_code', r.team_code);
+                    if (r.team_name && !frm.doc.team_name) frm.set_value('team_name', r.team_name);
+                }
+            });
+        }
+
+        // Ensure team_code and team_name inputs are styled as non-clickable plain text
+        frm.set_df_property('team_code', 'read_only', 1);
+        frm.set_df_property('team_name', 'read_only', 1);
+        setTimeout(() => {
+            frm.$wrapper.find('[data-fieldname="team_code"] input, [data-fieldname="team_name"] input').css({
+                'pointer-events': 'none',
+                'background-color': 'transparent',
+                'border': 'none',
+                'font-weight': 'bold',
+                'cursor': 'default'
+            });
+        }, 100);
+
+        // Show live score
+        calculate_total(frm);
     },
     
     round: function(frm) {

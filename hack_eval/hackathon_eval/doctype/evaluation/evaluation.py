@@ -3,7 +3,11 @@ from frappe.model.document import Document
 from frappe.utils import flt
 
 class Evaluation(Document):
+    def before_insert(self):
+        self.populate_team_details()
+
     def validate(self):
+        self.populate_team_details()
         # 1. Level-gating validation for Mentors
         roles = frappe.get_roles(frappe.session.user)
         is_admin = ("System Manager" in roles or "Hackathon Organizer" in roles or frappe.session.user == "Administrator")
@@ -17,6 +21,15 @@ class Evaluation(Document):
                 old_status = frappe.db.get_value("Evaluation", self.name, "status")
                 if old_status == "Submitted":
                     frappe.throw("This evaluation has already been submitted and cannot be modified.")
+
+    def populate_team_details(self):
+        if self.team and (not self.team_code or not self.team_name):
+            t_data = frappe.db.get_value("Hackathon Team", self.team, ["team_code", "team_name"], as_dict=True)
+            if t_data:
+                if not self.team_code:
+                    self.team_code = t_data.team_code or self.team
+                if not self.team_name:
+                    self.team_name = t_data.team_name or ""
 
         # 2. Populate criteria if scores table is empty
         if not self.scores and self.round:

@@ -42,7 +42,8 @@
    "options": "Hackathon Team",
    "reqd": 1,
    "in_list_view": 0,
-   "in_standard_filter": 1
+   "in_standard_filter": 0,
+   "hidden": 1
   },
   {
    "fieldname": "round",

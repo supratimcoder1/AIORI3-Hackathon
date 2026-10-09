@@ -34,8 +34,18 @@ def after_install():
     after_migrate()
 
 def after_migrate():
+    backfill_evaluation_team_codes()
     sync_custom_workspaces()
     hide_standard_workspaces()
+
+def backfill_evaluation_team_codes():
+    frappe.db.sql("""
+        UPDATE `tabEvaluation` e
+        JOIN `tabHackathon Team` t ON e.team = t.name
+        SET e.team_code = t.team_code, e.team_name = t.team_name
+        WHERE IFNULL(e.team_code, '') = '' OR IFNULL(e.team_name, '') = ''
+    """)
+    frappe.db.commit()
 
 def hide_standard_workspaces():
     workspaces_to_hide = ['Users', 'Website', 'Tools', 'Integrations', 'Build']

@@ -34,7 +34,7 @@ class HackathonRound(Document):
                     "status": ["in", ["Active", "Finalist"]],
                     "current_level": round_num
                 }, fields=[
-                    "name", "problem_statement_area",
+                    "name", "team_code", "team_name", "problem_statement_area",
                     "member_1_type", "member_1_email",
                     "member_2_type", "member_2_email",
                     "member_3_type", "member_3_email"
@@ -77,6 +77,8 @@ class HackathonRound(Document):
                             eval_doc = frappe.get_doc({
                                 "doctype": "Evaluation",
                                 "team": team.name,
+                                "team_code": team.team_code or team.name,
+                                "team_name": team.team_name or "",
                                 "round": self.name,
                                 "evaluator": mentor_email,
                                 "status": "Pending"
