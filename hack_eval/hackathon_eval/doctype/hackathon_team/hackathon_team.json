@@ -34,6 +34,7 @@
   "presentation_link",
   "repository_link",
   "status",
+  "evaluation_decision",
   "current_level",
   "eliminated_at_level",
   "final_position",
@@ -219,6 +220,15 @@
    "options": "Active\nEliminated\nFinalist\nWinner"
   },
   {
+   "default": "",
+   "fieldname": "evaluation_decision",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Evaluate",
+   "options": "\nLevel Up\nEliminate"
+  },
+  {
    "default": "1",
    "fieldname": "current_level",
    "fieldtype": "Int",
@@ -260,7 +270,7 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Cumulative Score",
+   "label": "Average Score",
    "read_only": 1
   },
   {
@@ -401,7 +411,7 @@
   }
  ],
  "row_format": "Dynamic",
- "sort_field": "modified",
+ "sort_field": "cumulative_score",
  "sort_order": "DESC",
  "states": [],
  "title_field": "team_name",

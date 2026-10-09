@@ -304,61 +304,56 @@ def recompute_round_results(round_name):
     return "Recomputed all results and ranked teams."
 
 @frappe.whitelist()
-def promote_round(round_name, advance_count=None):
+def promote_round(round_name):
     frappe.only_for(["System Manager", "Hackathon Organizer"])
     round_doc = frappe.get_doc("Hackathon Round", round_name)
     if round_doc.status != "Closed":
-        frappe.throw("Only Closed rounds can have cutoff applied and promoted.")
+        frappe.throw("Only Closed rounds can be advanced.")
         
-    if advance_count is not None and int(advance_count) > 0:
-        round_doc.advance_count = int(advance_count)
-        round_doc.save(ignore_permissions=True)
-        
-    recompute_round_results(round_name)
+    round_num = round_doc.round_number
     
-    cutoff = round_doc.advance_count
-    if not cutoff or cutoff <= 0:
-        frappe.throw("Please set a valid Advance Count (N) before promoting.")
-        
-    ties = frappe.db.count("Team Round Result", {"round": round_name, "flag_tie_at_cutoff": 1})
-    if ties > 0:
-        frappe.throw(f"There are tied teams right at cutoff rank {cutoff}. A Reviewer must resolve the tie before advancing.")
-        
-    results = frappe.get_all("Team Round Result", filters={"round": round_name}, fields=["name", "team", "rank"], order_by="rank asc")
+    # Query all active/finalist teams currently in this round
+    current_teams = frappe.get_all("Hackathon Team", filters={
+        "status": ["in", ["Active", "Finalist"]],
+        "current_level": round_num
+    }, fields=["name", "evaluation_decision"])
     
+    level_up_teams = [t for t in current_teams if t.evaluation_decision == "Level Up"]
+    if not level_up_teams:
+        frappe.throw("No teams have been marked as 'Level Up'. Please mark teams with 'Level Up' in the Hackathon Team list view before advancing.")
+        
     advanced_count = 0
     eliminated_count = 0
     
-    for r in results:
-        team_doc = frappe.get_doc("Hackathon Team", r.team)
-        res_doc = frappe.get_doc("Team Round Result", r.name)
-        
-        if r.rank <= cutoff:
-            # Advance
-            if round_doc.round_number < 3:
-                team_doc.current_level = round_doc.round_number + 1
+    for t in current_teams:
+        team_doc = frappe.get_doc("Hackathon Team", t.name)
+        result_name = frappe.db.get_value("Team Round Result", {"team": t.name, "round": round_name}, "name")
+        res_doc = frappe.get_doc("Team Round Result", result_name) if result_name else None
+
+        if t.evaluation_decision == "Level Up":
+            if round_num < 3:
+                team_doc.current_level = round_num + 1
                 team_doc.status = "Active"
-                res_doc.outcome = "Advanced"
+                if res_doc: res_doc.outcome = "Levelled Up"
             else:
                 team_doc.status = "Winner"
-                team_doc.final_position = r.rank
-                if r.rank == 1: res_doc.outcome = "First"
-                elif r.rank == 2: res_doc.outcome = "Second"
-                elif r.rank == 3: res_doc.outcome = "Third"
-                else: res_doc.outcome = "Finalist"
+                if res_doc: res_doc.outcome = "Winner"
+            team_doc.evaluation_decision = ""
             advanced_count += 1
         else:
-            # Eliminate
             team_doc.status = "Eliminated"
-            team_doc.eliminated_at_level = round_doc.round_number
-            res_doc.outcome = "Eliminated"
+            team_doc.eliminated_at_level = round_num
+            team_doc.evaluation_decision = ""
+            if res_doc: res_doc.outcome = "Eliminated"
             eliminated_count += 1
-            
+
         team_doc.save(ignore_permissions=True)
-        res_doc.save(ignore_permissions=True)
-        
+        if res_doc:
+            res_doc.save(ignore_permissions=True)
+            
+    recompute_round_results(round_name)
     frappe.db.commit()
-    return f"Cutoff {cutoff} applied successfully: {advanced_count} advanced, {eliminated_count} eliminated."
+    return f"Round {round_name} advanced successfully: {advanced_count} teams Levelled Up to Level {round_num + 1 if round_num < 3 else 'Finale'}, {eliminated_count} teams Eliminated."
 
 @frappe.whitelist()
 def rename_teams_to_codes():

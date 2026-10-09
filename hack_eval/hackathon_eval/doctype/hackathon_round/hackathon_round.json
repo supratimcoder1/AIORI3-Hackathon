@@ -56,7 +56,8 @@
   {
    "fieldname": "advance_count",
    "fieldtype": "Int",
-   "label": "Advance Count"
+   "label": "Advance Count",
+   "hidden": 1
   },
   {
    "fieldname": "max_round_score",

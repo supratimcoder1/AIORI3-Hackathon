@@ -9,22 +9,21 @@ def get_columns():
         {"label": "Valid Composition", "fieldname": "valid_composition", "fieldtype": "Check", "width": 80},
         {"label": "Round Score", "fieldname": "round_score", "fieldtype": "Float", "width": 100},
         {"label": "Cumulative Score", "fieldname": "cumulative_score", "fieldtype": "Float", "width": 100},
-        {"label": "Incomplete", "fieldname": "flag_incomplete", "fieldtype": "Check", "width": 80},
-        {"label": "Disagreement", "fieldname": "flag_disagreement", "fieldtype": "Check", "width": 80},
-        {"label": "Near Cutoff", "fieldname": "flag_near_cutoff", "fieldtype": "Check", "width": 80},
-        {"label": "Tie at Cutoff", "fieldname": "flag_tie_at_cutoff", "fieldtype": "Check", "width": 80},
         {"label": "Review Status", "fieldname": "review_status", "fieldtype": "Data", "width": 120},
-        {"label": "Outcome", "fieldname": "outcome", "fieldtype": "Data", "width": 100}
+        {"label": "Outcome", "fieldname": "outcome", "fieldtype": "Data", "width": 120}
     ]
 
 def execute(filters=None):
     columns = get_columns()
     
     round_name = filters.get("round") if filters else None
+    round_info = None
+    if round_name:
+        round_info = frappe.db.get_value("Hackathon Round", round_name, ["round_number", "status"], as_dict=True)
     
     # Query all active teams
     team_sql = """
-        SELECT name, team_code, team_name, problem_statement_area as track, valid_composition, status
+        SELECT name, team_code, team_name, problem_statement_area as track, valid_composition, status, current_level, evaluation_decision
         FROM `tabHackathon Team`
         WHERE status IN ('Active', 'Finalist', 'Winner', 'Eliminated')
     """
@@ -55,11 +54,6 @@ def execute(filters=None):
             team_evals[e.team] = []
         team_evals[e.team].append(e)
         
-    try:
-        threshold = float(frappe.db.get_single_value("Hackathon Settings", "disagreement_threshold") or 3.0)
-    except:
-        threshold = 3.0
-        
     data = []
     
     for team in teams:
@@ -85,30 +79,53 @@ def execute(filters=None):
             if round_counts[rnd] > 0:
                 cumulative_score += (round_totals[rnd] / round_counts[rnd])
                 
-        # Calculate Current Round Score
+        # Calculate Current Round Score and Review Status
         round_score = 0.0
-        flag_incomplete = 0
-        flag_disagreement = 0
+        review_status = "Pending"
         
         if round_name:
-            # All provisioned evals for this round
             current_evals = [e for e in evals if e.round == round_name]
-            
-            # Only submitted evals for scoring
             current_submitted = [e for e in submitted_evals if e.round == round_name]
             scores = [float(e.total_score or 0.0) for e in current_submitted]
             
             if len(scores) > 0:
                 round_score = sum(scores) / len(scores)
-                spread = max(scores) - min(scores)
-                if spread >= threshold:
-                    flag_disagreement = 1
-                    
-            submitted = len(current_submitted)
-            if submitted < len(current_evals):
-                flag_incomplete = 1
+                
+            # Completed once all mentors assigned submit evaluations
+            if current_evals and len(current_submitted) == len(current_evals):
+                review_status = "Completed"
+            else:
+                review_status = "Pending"
         else:
             round_score = cumulative_score
+            if evals and len(submitted_evals) == len(evals):
+                review_status = "Completed"
+            else:
+                review_status = "Pending"
+                
+        # Determine Outcome based on round state
+        outcome = "Pending"
+        if round_info:
+            r_num = round_info.round_number
+            r_status = round_info.status
+            if r_status in ["Open", "Not Started"]:
+                outcome = "Pending"
+            else: # Round is Closed
+                if team.current_level > r_num or (r_num == 3 and team.status == "Winner") or (team.evaluation_decision == "Level Up"):
+                    outcome = "Levelled Up"
+                elif team.status == "Eliminated" or team.evaluation_decision == "Eliminate":
+                    outcome = "Eliminated"
+                else:
+                    outcome = "Pending"
+        else:
+            if team.status == "Winner":
+                outcome = "Winner"
+            elif team.status == "Eliminated":
+                outcome = "Eliminated"
+            elif team.current_level > 1:
+                outcome = "Levelled Up"
+            else:
+                outcome = "Pending"
             
         team_code_val = (team.team_code or "").strip() or team_id
         data.append({
@@ -119,12 +136,8 @@ def execute(filters=None):
             "valid_composition": team.valid_composition,
             "round_score": round_score,
             "cumulative_score": cumulative_score,
-            "flag_incomplete": flag_incomplete,
-            "flag_disagreement": flag_disagreement,
-            "flag_near_cutoff": 0,
-            "flag_tie_at_cutoff": 0,
-            "review_status": "Pending" if (flag_incomplete or flag_disagreement) else "Not Required",
-            "outcome": "Pending"
+            "review_status": review_status,
+            "outcome": outcome
         })
         
     # Sort automatically by Cumulative Score then Round Score, and alphabetically by Team Code if score is 0

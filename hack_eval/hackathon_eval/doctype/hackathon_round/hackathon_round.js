@@ -136,30 +136,19 @@ frappe.ui.form.on('Hackathon Round', {
                 });
             });
             
-            frm.add_custom_button(__('Apply Cutoff & Advance'), () => {
-                frappe.prompt([
-                    {
-                        fieldname: 'advance_count',
-                        fieldtype: 'Int',
-                        label: __('Top N Teams to Advance'),
-                        default: frm.doc.advance_count || 5,
-                        reqd: 1
-                    }
-                ], (values) => {
+            frm.add_custom_button(__('Advance Round (Level Up Teams)'), () => {
+                frappe.confirm(__('Advance all teams marked as "Level Up" to the next round, and mark all other teams in {0} as Eliminated? Proceed?', [frm.doc.round_name]), () => {
                     frappe.call({
                         method: 'hack_eval.hackathon_eval.evaluation_logic.promote_round',
-                        args: { 
-                            round_name: frm.doc.name,
-                            advance_count: values.advance_count
-                        },
+                        args: { round_name: frm.doc.name },
                         callback: (r) => { 
                             if (!r.exc) {
-                                frappe.msgprint(r.message || __('Cutoff Applied Successfully'));
+                                frappe.msgprint(r.message || __('Round Advanced Successfully'));
                                 frm.reload_doc(); 
                             }
                         }
                     });
-                }, __('Set Advancement Cutoff (N)'), __('Apply Cutoff'));
+                });
             }).addClass('btn-success');
         }
     }

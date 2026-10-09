@@ -5,7 +5,8 @@ def get_evaluation_permission_query(user):
     roles = frappe.get_roles(user)
     if "System Manager" in roles or "Hackathon Organizer" in roles or "Reviewer" in roles or "Chief Mentor" in roles:
         return ""
-    # Mentors/Evaluators only see their own assigned evaluations
+
+    # Normal mentors only see their own assigned evaluations
     return f"`tabEvaluation`.evaluator = {frappe.db.escape(user)}"
 
 def evaluation_has_permission(doc, ptype="read", user=None):

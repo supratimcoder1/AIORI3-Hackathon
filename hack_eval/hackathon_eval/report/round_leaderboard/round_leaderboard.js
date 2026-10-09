@@ -24,17 +24,22 @@ frappe.query_reports["Round Leaderboard"] = {
 			value = `<a href="/app/query-report/Team Scorecard?team=${encodeURIComponent(data.team)}" target="_blank" style="font-weight:bold">${frappe.utils.escape_html(data.team_code || data.team)}</a>`;
 		}
 
-		if (data && data.flag_incomplete && column.fieldname == "flag_incomplete") {
-			value = "<span style='color:red'>" + value + "</span>";
+		if (data && column.fieldname == "review_status") {
+			if (data.review_status === "Completed") {
+				value = "<span class='indicator-pill green bold'>Completed</span>";
+			} else {
+				value = "<span class='indicator-pill orange bold'>Pending</span>";
+			}
 		}
-		if (data && data.flag_disagreement && column.fieldname == "flag_disagreement") {
-			value = "<span style='color:orange'>" + value + "</span>";
-		}
-		if (data && data.flag_near_cutoff && column.fieldname == "flag_near_cutoff") {
-			value = "<span style='color:blue'>" + value + "</span>";
-		}
-		if (data && data.flag_tie_at_cutoff && column.fieldname == "flag_tie_at_cutoff") {
-			value = "<span style='color:red; font-weight:bold'>" + value + "</span>";
+
+		if (data && column.fieldname == "outcome") {
+			if (data.outcome === "Levelled Up" || data.outcome === "Winner") {
+				value = "<span class='indicator-pill green bold'>" + frappe.utils.escape_html(data.outcome) + "</span>";
+			} else if (data.outcome === "Eliminated") {
+				value = "<span class='indicator-pill red bold'>Eliminated</span>";
+			} else {
+				value = "<span class='text-muted'>Pending</span>";
+			}
 		}
 
 		return value;
