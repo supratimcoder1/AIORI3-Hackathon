@@ -20,8 +20,8 @@ frappe.query_reports["Round Leaderboard"] = {
 	"formatter": function(value, row, column, data, default_formatter) {
 		value = default_formatter(value, row, column, data);
 		
-		if (column.fieldname == "team") {
-			value = `<a href="/app/query-report/Team Scorecard?team=${encodeURIComponent(data.team)}" target="_blank">${data.team}</a>`;
+		if (column.fieldname == "team_code") {
+			value = `<a href="/app/query-report/Team Scorecard?team=${encodeURIComponent(data.team)}" target="_blank" style="font-weight:bold">${frappe.utils.escape_html(data.team_code || data.team)}</a>`;
 		}
 
 		if (data && data.flag_incomplete && column.fieldname == "flag_incomplete") {

@@ -3,7 +3,7 @@ import frappe
 def get_columns():
     return [
         {"label": "Rank", "fieldname": "rank", "fieldtype": "Int", "width": 60},
-        {"label": "Team", "fieldname": "team", "fieldtype": "Link", "options": "Hackathon Team", "width": 160},
+        {"label": "Team Code", "fieldname": "team_code", "fieldtype": "Data", "width": 160},
         {"label": "Team Name", "fieldname": "team_name", "fieldtype": "Data", "width": 180},
         {"label": "Track", "fieldname": "track", "fieldtype": "Data", "width": 180},
         {"label": "Valid Composition", "fieldname": "valid_composition", "fieldtype": "Check", "width": 80},
@@ -110,7 +110,9 @@ def execute(filters=None):
         else:
             round_score = cumulative_score
             
+        team_code_val = (team.team_code or "").strip() or team_id
         data.append({
+            "team_code": team_code_val,
             "team": team_id,
             "team_name": team.team_name,
             "track": team.track,
@@ -126,7 +128,7 @@ def execute(filters=None):
         })
         
     # Sort automatically by Cumulative Score then Round Score, and alphabetically by Team Code if score is 0
-    data.sort(key=lambda x: (-x["cumulative_score"], -x["round_score"], x["team"]))
+    data.sort(key=lambda x: (-x["cumulative_score"], -x["round_score"], x["team_code"]))
     
     # Assign Rank
     for idx, row in enumerate(data):

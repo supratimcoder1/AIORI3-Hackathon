@@ -9,11 +9,10 @@ def execute(filters=None):
 def get_columns():
     return [
         {
-            "fieldname": "team_link",
+            "fieldname": "team_code",
             "label": "Team Code",
-            "fieldtype": "Link",
-            "options": "Hackathon Team",
-            "width": 150
+            "fieldtype": "Data",
+            "width": 160
         },
         {
             "fieldname": "team_name",
@@ -44,6 +43,12 @@ def get_columns():
             "label": "Average Score",
             "fieldtype": "Float",
             "width": 120
+        },
+        {
+            "fieldname": "team_link",
+            "label": "Team Link",
+            "fieldtype": "Data",
+            "hidden": 1
         }
     ]
 
@@ -70,6 +75,7 @@ def get_data(filters):
         
     sql = f"""
         SELECT 
+            COALESCE(NULLIF(t.team_code, ''), t.name) as team_code,
             t.name as team_link,
             t.team_name,
             t.problem_statement_area as track,
@@ -82,9 +88,9 @@ def get_data(filters):
             `tabHackathon Team` t ON e.team = t.name
         {where_clause}
         GROUP BY 
-            t.name, t.team_name, t.problem_statement_area, e.round, t.status
+            t.name, t.team_code, t.team_name, t.problem_statement_area, e.round, t.status
         ORDER BY 
-            average_score DESC
+            average_score DESC, team_code ASC
     """
     
     return frappe.db.sql(sql, values, as_dict=True)

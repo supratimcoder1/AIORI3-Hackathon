@@ -19,8 +19,8 @@ frappe.query_reports["Team Evaluations"] = {
 	"formatter": function(value, row, column, data, default_formatter) {
 		value = default_formatter(value, row, column, data);
 		
-		if (data && column.fieldname === "team_link") {
-			const label = data.team_link || data.team_name;
+		if (data && column.fieldname === "team_code") {
+			const label = data.team_code || data.team_name || data.team_link;
 			value = `<a href="/app/evaluation?team=${encodeURIComponent(data.team_link)}" target="_blank" style="font-weight:bold">${frappe.utils.escape_html(label)}</a>`;
 		}
 

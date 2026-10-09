@@ -4,8 +4,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "team",
+  "team_code",
   "team_name",
+  "team",
   "round",
   "evaluator",
   "ready_to_submit",
@@ -17,11 +18,11 @@
  ],
  "fields": [
   {
-   "fieldname": "team",
-   "fieldtype": "Link",
-   "label": "Team",
-   "options": "Hackathon Team",
-   "reqd": 1,
+   "fieldname": "team_code",
+   "fieldtype": "Data",
+   "label": "Team Code",
+   "fetch_from": "team.team_code",
+   "read_only": 1,
    "in_list_view": 1,
    "in_standard_filter": 1
   },
@@ -32,6 +33,15 @@
    "fetch_from": "team.team_name",
    "read_only": 1,
    "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "team",
+   "fieldtype": "Link",
+   "label": "Team",
+   "options": "Hackathon Team",
+   "reqd": 1,
+   "in_list_view": 0,
    "in_standard_filter": 1
   },
   {
