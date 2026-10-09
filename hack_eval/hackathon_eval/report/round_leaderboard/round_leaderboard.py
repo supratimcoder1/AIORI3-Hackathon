@@ -111,8 +111,8 @@ def execute(filters=None):
             if r_status in ["Open", "Not Started"]:
                 outcome = "Pending"
             else: # Round is Closed
-                if team.current_level > r_num or (r_num == 3 and team.status == "Winner") or (team.evaluation_decision == "Level Up"):
-                    outcome = "Levelled Up"
+                if team.current_level > r_num or (r_num == 3 and team.status in ["Winner", "Finalist"]) or (team.evaluation_decision == "Level Up"):
+                    outcome = "Advanced" if r_num < 3 else "Finalist"
                 elif team.status == "Eliminated" or team.evaluation_decision == "Eliminate":
                     outcome = "Eliminated"
                 else:
@@ -120,10 +120,12 @@ def execute(filters=None):
         else:
             if team.status == "Winner":
                 outcome = "Winner"
+            elif team.status == "Finalist":
+                outcome = "Finalist"
             elif team.status == "Eliminated":
                 outcome = "Eliminated"
             elif team.current_level > 1:
-                outcome = "Levelled Up"
+                outcome = "Advanced"
             else:
                 outcome = "Pending"
             

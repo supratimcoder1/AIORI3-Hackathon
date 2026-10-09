@@ -334,10 +334,10 @@ def promote_round(round_name):
             if round_num < 3:
                 team_doc.current_level = round_num + 1
                 team_doc.status = "Active"
-                if res_doc: res_doc.outcome = "Levelled Up"
+                if res_doc: res_doc.outcome = "Advanced"
             else:
-                team_doc.status = "Winner"
-                if res_doc: res_doc.outcome = "Winner"
+                team_doc.status = "Finalist"
+                if res_doc: res_doc.outcome = "Finalist"
             team_doc.evaluation_decision = ""
             advanced_count += 1
         else:

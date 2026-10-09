@@ -34,7 +34,7 @@ frappe.query_reports["Round Leaderboard"] = {
 		}
 
 		if (data && column.fieldname == "outcome") {
-			if (data.outcome === "Levelled Up" || data.outcome === "Winner") {
+			if (data.outcome === "Advanced" || data.outcome === "Finalist" || data.outcome === "Winner") {
 				value = "<span class='indicator-pill green bold'>" + frappe.utils.escape_html(data.outcome) + "</span>";
 			} else if (data.outcome === "Eliminated") {
 				value = "<span class='indicator-pill red bold'>Eliminated</span>";
