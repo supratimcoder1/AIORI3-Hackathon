@@ -64,17 +64,16 @@ frappe.listview_settings['Hackathon Team'] = {
         if (!listview.list_view_settings) {
             listview.list_view_settings = {};
         }
-        listview.list_view_settings.total_fields = 10;
+        listview.list_view_settings.total_fields = 12;
 
-        // Ensure user settings don't drop the new fields
+        // Ensure user settings don't drop any of the required fields
         let user_settings = frappe.get_user_settings('Hackathon Team');
         if (user_settings && user_settings.fields) {
-            if (!user_settings.fields.includes('cumulative_score')) {
-                user_settings.fields.push('cumulative_score');
-            }
-            if (!user_settings.fields.includes('evaluation_decision')) {
-                user_settings.fields.push('evaluation_decision');
-            }
+            ['team_code', 'problem_statement_area', 'cumulative_score', 'evaluation_decision'].forEach(f => {
+                if (!user_settings.fields.includes(f)) {
+                    user_settings.fields.push(f);
+                }
+            });
         }
 
         const ensure_column = (fieldname, label, fieldtype, after_fieldname) => {
@@ -102,7 +101,8 @@ frappe.listview_settings['Hackathon Team'] = {
         };
 
         ensure_column('team_code', 'Team Code', 'Data', 'Status');
-        ensure_column('cumulative_score', 'Average Score', 'Float', 'team_code');
+        ensure_column('problem_statement_area', 'Problem Statement Area', 'Data', 'team_code');
+        ensure_column('cumulative_score', 'Average Score', 'Float', 'problem_statement_area');
         ensure_column('evaluation_decision', 'Evaluate', 'Select', 'cumulative_score');
 
         if (listview.$result && listview.$result.find('.list-row-head').length) {

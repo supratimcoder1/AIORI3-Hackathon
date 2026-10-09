@@ -8,10 +8,10 @@
  "field_order": [
   "team_name",
   "team_code",
+  "problem_statement_area",
   "cumulative_score",
   "evaluation_decision",
   "institution",
-  "problem_statement_area",
   "valid_composition",
   "faculty",
   "mentor",
@@ -77,6 +77,13 @@
    "in_standard_filter": 1
   },
   {
+   "fieldname": "problem_statement_area",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Problem Statement Area"
+  },
+  {
    "fieldname": "cumulative_score",
    "fieldtype": "Float",
    "in_list_view": 1,
@@ -97,13 +104,6 @@
    "fieldname": "institution",
    "fieldtype": "Data",
    "label": "Institute"
-  },
-  {
-   "fieldname": "problem_statement_area",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Problem Statement Area"
   },
   {
    "default": "0",
@@ -356,7 +356,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-09 13:00:00.000000",
+ "modified": "2026-10-09 13:30:00.000000",
  "modified_by": "Administrator",
  "module": "Hackathon Eval",
  "name": "Hackathon Team",
