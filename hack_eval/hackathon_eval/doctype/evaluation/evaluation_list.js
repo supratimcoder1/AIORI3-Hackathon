@@ -9,6 +9,12 @@ frappe.listview_settings['Evaluation'] = {
                 return `<span class="bold text-success">${score}</span>`;
             }
             return `<span class="text-muted">${score}</span>`;
+        },
+        team_code(val, df, doc) {
+            return `<span style="cursor: default; pointer-events: none; font-weight: 500;">${frappe.utils.escape_html(val || '')}</span>`;
+        },
+        team_name(val, df, doc) {
+            return `<span style="cursor: default; pointer-events: none; font-weight: 500;">${frappe.utils.escape_html(val || '')}</span>`;
         }
     },
 

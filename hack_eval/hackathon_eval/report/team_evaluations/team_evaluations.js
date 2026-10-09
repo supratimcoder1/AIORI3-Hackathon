@@ -21,8 +21,19 @@ frappe.query_reports["Team Evaluations"] = {
 		
 		if (data && column.fieldname === "team_code") {
 			const label = data.team_code || data.team_name || data.team_link;
-			const code = data.team_code || data.team_link;
-			value = `<a href="/app/evaluation?team_code=${encodeURIComponent(code)}" target="_blank" style="font-weight:bold">${frappe.utils.escape_html(label)}</a>`;
+			value = `<span style="font-weight:600; cursor:default; pointer-events:none;">${frappe.utils.escape_html(label)}</span>`;
+		}
+
+		if (data && column.fieldname === "team_name") {
+			value = `<span style="cursor:default; pointer-events:none;">${frappe.utils.escape_html(value || '')}</span>`;
+		}
+
+		if (data && column.fieldname === "valid") {
+			if (data.valid === "Valid" || data.valid === 1) {
+				value = `<span class="indicator-pill green bold">Valid</span>`;
+			} else {
+				value = `<span class="indicator-pill red bold">Invalid</span>`;
+			}
 		}
 
 		return value;

@@ -19,39 +19,43 @@ frappe.listview_settings['Hackathon Team'] = {
     bind_events(listview) {
         if (!listview || !listview.wrapper) return;
         
-        listview.wrapper.off('change.eval_decision').on('change.eval_decision', '.eval-decision-select', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            let team_name = $(this).attr('data-team') || $(this).data('team');
-            let decision = $(this).val();
-            let $select = $(this);
+        listview.wrapper.off('.eval_decision')
+            .on('click.eval_decision mousedown.eval_decision mouseup.eval_decision pointerdown.eval_decision keydown.eval_decision', '.eval-decision-select, .eval-select-wrapper', function(e) {
+                e.stopPropagation();
+            })
+            .on('change.eval_decision', '.eval-decision-select', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                let team_name = $(this).attr('data-team') || $(this).data('team');
+                let decision = $(this).val();
+                let $select = $(this);
 
-            frappe.call({
-                method: 'frappe.client.set_value',
-                args: {
-                    doctype: 'Hackathon Team',
-                    name: team_name,
-                    fieldname: 'evaluation_decision',
-                    value: decision
-                },
-                callback: function(r) {
-                    if (!r.exc) {
-                        frappe.show_alert({
-                            message: __('Team {0} marked as {1}', [team_name, decision || 'Pending']),
-                            indicator: decision === 'Level Up' ? 'green' : (decision === 'Eliminate' ? 'red' : 'blue')
-                        }, 3);
-                        if (decision === 'Level Up') {
-                            $select.css({ 'color': '#28a745', 'border-color': '#28a745' });
-                        } else if (decision === 'Eliminate') {
-                            $select.css({ 'color': '#dc3545', 'border-color': '#dc3545' });
-                        } else {
-                            $select.css({ 'color': '#6c757d', 'border-color': '#d1d8dd' });
+                frappe.call({
+                    method: 'frappe.client.set_value',
+                    args: {
+                        doctype: 'Hackathon Team',
+                        name: team_name,
+                        fieldname: 'evaluation_decision',
+                        value: decision
+                    },
+                    callback: function(r) {
+                        if (!r.exc) {
+                            frappe.show_alert({
+                                message: __('Team {0} marked as {1}', [team_name, decision || 'Pending']),
+                                indicator: decision === 'Level Up' ? 'green' : (decision === 'Eliminate' ? 'red' : 'blue')
+                            }, 3);
+                            if (decision === 'Level Up') {
+                                $select.css({ 'color': '#28a745', 'border-color': '#28a745' });
+                            } else if (decision === 'Eliminate') {
+                                $select.css({ 'color': '#dc3545', 'border-color': '#dc3545' });
+                            } else {
+                                $select.css({ 'color': '#6c757d', 'border-color': '#d1d8dd' });
+                            }
                         }
                     }
-                }
+                });
+                return false;
             });
-            return false;
-        });
     },
 
     patch_listview(listview) {
@@ -125,11 +129,19 @@ frappe.listview_settings['Hackathon Team'] = {
             let color_style = val === 'Level Up' ? 'color: #28a745; border-color: #28a745;' : (val === 'Eliminate' ? 'color: #dc3545; border-color: #dc3545;' : 'color: #6c757d; border-color: #d1d8dd;');
 
             return `
-                <select class="form-control input-xs eval-decision-select" data-team="${frappe.utils.escape_html(doc.name)}" style="height: 24px; padding: 1px 4px; font-size: 11px; width: 100px; border-radius: 4px; font-weight: 600; cursor: pointer; ${color_style}">
-                    <option value="" ${none_selected}>-- Select --</option>
-                    <option value="Level Up" ${level_up_selected}>Level Up</option>
-                    <option value="Eliminate" ${eliminate_selected}>Eliminate</option>
-                </select>
+                <div class="eval-select-wrapper" onclick="event.stopPropagation();" onmousedown="event.stopPropagation();" onmouseup="event.stopPropagation();" style="display:inline-block;">
+                    <select class="form-control input-xs eval-decision-select" 
+                            onclick="event.stopPropagation();" 
+                            onmousedown="event.stopPropagation();" 
+                            onmouseup="event.stopPropagation();" 
+                            onkeydown="event.stopPropagation();" 
+                            data-team="${frappe.utils.escape_html(doc.name)}" 
+                            style="height: 24px; padding: 1px 4px; font-size: 11px; width: 100px; border-radius: 4px; font-weight: 600; cursor: pointer; ${color_style}">
+                        <option value="" ${none_selected}>-- Select --</option>
+                        <option value="Level Up" ${level_up_selected}>Level Up</option>
+                        <option value="Eliminate" ${eliminate_selected}>Eliminate</option>
+                    </select>
+                </div>
             `;
         },
         cumulative_score(val, df, doc) {

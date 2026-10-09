@@ -12,13 +12,21 @@ def get_columns():
             "fieldname": "team_code",
             "label": "Team Code",
             "fieldtype": "Data",
-            "width": 160
+            "width": 160,
+            "filterable": 0
         },
         {
             "fieldname": "team_name",
             "label": "Team Name",
             "fieldtype": "Data",
-            "width": 180
+            "width": 180,
+            "filterable": 0
+        },
+        {
+            "fieldname": "valid",
+            "label": "Valid",
+            "fieldtype": "Data",
+            "width": 100
         },
         {
             "fieldname": "track",
@@ -78,6 +86,7 @@ def get_data(filters):
             COALESCE(NULLIF(t.team_code, ''), t.name) as team_code,
             t.name as team_link,
             t.team_name,
+            CASE WHEN IFNULL(t.valid_composition, 0) = 1 THEN 'Valid' ELSE 'Invalid' END as valid,
             t.problem_statement_area as track,
             e.round,
             t.status as status,
@@ -85,10 +94,10 @@ def get_data(filters):
         FROM 
             `tabEvaluation` e
         JOIN 
-            `tabHackathon Team` t ON e.team = t.name
+            `tabHackathon Team` t ON (e.team = t.name OR e.team = t.team_code)
         {where_clause}
         GROUP BY 
-            t.name, t.team_code, t.team_name, t.problem_statement_area, e.round, t.status
+            t.name, t.team_code, t.team_name, t.valid_composition, t.problem_statement_area, e.round, t.status
         ORDER BY 
             average_score DESC, team_code ASC
     """
