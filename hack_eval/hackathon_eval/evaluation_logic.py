@@ -357,3 +357,23 @@ def promote_round(round_name, advance_count=None):
         
     frappe.db.commit()
     return f"Cutoff {cutoff} applied successfully: {advanced_count} advanced, {eliminated_count} eliminated."
+
+@frappe.whitelist()
+def rename_teams_to_codes():
+    teams = frappe.get_all("Hackathon Team", fields=["name", "team_code"])
+    renamed = 0
+    skipped = 0
+    for t in teams:
+        old_name = t.name
+        new_name = (t.team_code or "").strip()
+        if new_name and old_name != new_name:
+            if not frappe.db.exists("Hackathon Team", new_name):
+                try:
+                    frappe.rename_doc("Hackathon Team", old_name, new_name, force=True, ignore_permissions=True)
+                    renamed += 1
+                except Exception as e:
+                    frappe.log_error(f"Failed renaming {old_name} to {new_name}", str(e))
+            else:
+                skipped += 1
+    frappe.db.commit()
+    return f"Renamed {renamed} teams to their Team Codes. Skipped: {skipped}."
