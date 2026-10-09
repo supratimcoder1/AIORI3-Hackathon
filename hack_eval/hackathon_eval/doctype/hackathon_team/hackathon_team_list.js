@@ -6,6 +6,7 @@ frappe.listview_settings['Hackathon Team'] = {
     onload(listview) {
         frappe.listview_settings['Hackathon Team'].patch_listview(listview);
         frappe.listview_settings['Hackathon Team'].bind_events(listview);
+        frappe.listview_settings['Hackathon Team'].add_bulk_actions(listview);
     },
 
     before_render() {
@@ -13,45 +14,134 @@ frappe.listview_settings['Hackathon Team'] = {
         if (listview) {
             frappe.listview_settings['Hackathon Team'].patch_listview(listview);
             frappe.listview_settings['Hackathon Team'].bind_events(listview);
+            frappe.listview_settings['Hackathon Team'].add_bulk_actions(listview);
+        }
+    },
+
+    add_bulk_actions(listview) {
+        var is_admin = frappe.user_roles.includes('System Manager') || 
+                       frappe.user_roles.includes('Hackathon Organizer') || 
+                       frappe.session.user === 'Administrator';
+
+        if (is_admin && !listview._level_up_actions_added) {
+            listview._level_up_actions_added = true;
+            listview.page.add_action_item(__('Mark as Level Up'), function() {
+                let checked_items = listview.get_checked_items();
+                if (!checked_items.length) {
+                    frappe.msgprint(__('Please select at least one team.'));
+                    return;
+                }
+                let names = checked_items.map(d => d.name);
+                frappe.call({
+                    method: 'hack_eval.hackathon_eval.evaluation_logic.bulk_set_team_evaluation_decision',
+                    args: {
+                        team_names: names,
+                        decision: 'Level Up'
+                    },
+                    freeze: true,
+                    freeze_message: __('Marking teams as Level Up...'),
+                    callback: function(r) {
+                        if (!r.exc) {
+                            frappe.show_alert({
+                                message: __('{0} teams marked as Level Up', [names.length]),
+                                indicator: 'green'
+                            }, 4);
+                            listview.refresh();
+                        }
+                    }
+                });
+            });
+
+            listview.page.add_action_item(__('Clear Level Up'), function() {
+                let checked_items = listview.get_checked_items();
+                if (!checked_items.length) {
+                    frappe.msgprint(__('Please select at least one team.'));
+                    return;
+                }
+                let names = checked_items.map(d => d.name);
+                frappe.call({
+                    method: 'hack_eval.hackathon_eval.evaluation_logic.bulk_set_team_evaluation_decision',
+                    args: {
+                        team_names: names,
+                        decision: ''
+                    },
+                    freeze: true,
+                    freeze_message: __('Clearing Level Up...'),
+                    callback: function(r) {
+                        if (!r.exc) {
+                            frappe.show_alert({
+                                message: __('Cleared Level Up for {0} teams', [names.length]),
+                                indicator: 'blue'
+                            }, 4);
+                            listview.refresh();
+                        }
+                    }
+                });
+            });
         }
     },
 
     bind_events(listview) {
         if (!listview || !listview.wrapper) return;
         
-        listview.wrapper.off('.eval_decision')
-            .on('click.eval_decision mousedown.eval_decision mouseup.eval_decision pointerdown.eval_decision keydown.eval_decision', '.eval-decision-select, .eval-select-wrapper', function(e) {
+        listview.wrapper.off('.eval_btn')
+            .on('click.eval_btn mousedown.eval_btn mouseup.eval_btn pointerdown.eval_btn keydown.eval_btn', '.btn-level-up, .eval-btn-wrapper', function(e) {
                 e.stopPropagation();
             })
-            .on('change.eval_decision', '.eval-decision-select', function(e) {
+            .on('click.eval_btn', '.btn-level-up', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                let team_name = $(this).attr('data-team') || $(this).data('team');
-                let decision = $(this).val();
-                let $select = $(this);
+                let $btn = $(this);
+                let team_name = $btn.attr('data-team') || $btn.data('team');
+                let current_decision = $btn.attr('data-decision');
+                let new_decision = current_decision === 'Level Up' ? '' : 'Level Up';
+
+                $btn.prop('disabled', true);
 
                 frappe.call({
-                    method: 'frappe.client.set_value',
+                    method: 'hack_eval.hackathon_eval.evaluation_logic.set_team_evaluation_decision',
                     args: {
-                        doctype: 'Hackathon Team',
-                        name: team_name,
-                        fieldname: 'evaluation_decision',
-                        value: decision
+                        team_name: team_name,
+                        decision: new_decision
                     },
                     callback: function(r) {
+                        $btn.prop('disabled', false);
                         if (!r.exc) {
-                            frappe.show_alert({
-                                message: __('Team {0} marked as {1}', [team_name, decision || 'Pending']),
-                                indicator: decision === 'Level Up' ? 'green' : (decision === 'Eliminate' ? 'red' : 'blue')
-                            }, 3);
-                            if (decision === 'Level Up') {
-                                $select.css({ 'color': '#28a745', 'border-color': '#28a745' });
-                            } else if (decision === 'Eliminate') {
-                                $select.css({ 'color': '#dc3545', 'border-color': '#dc3545' });
+                            if (new_decision === 'Level Up') {
+                                $btn.attr('data-decision', 'Level Up')
+                                    .removeClass('btn-default')
+                                    .addClass('btn-success')
+                                    .css({
+                                        'background-color': '#28a745',
+                                        'border-color': '#28a745',
+                                        'color': '#fff'
+                                    })
+                                    .html('<i class="fa fa-check" style="margin-right: 3px;"></i> Levelled Up');
+
+                                frappe.show_alert({
+                                    message: __('Team {0} marked as Level Up', [team_name]),
+                                    indicator: 'green'
+                                }, 3);
                             } else {
-                                $select.css({ 'color': '#6c757d', 'border-color': '#d1d8dd' });
+                                $btn.attr('data-decision', '')
+                                    .removeClass('btn-success')
+                                    .addClass('btn-default')
+                                    .css({
+                                        'background-color': 'transparent',
+                                        'border-color': '#d1d8dd',
+                                        'color': '#495057'
+                                    })
+                                    .html('Level Up');
+
+                                frappe.show_alert({
+                                    message: __('Level Up cleared for Team {0}', [team_name]),
+                                    indicator: 'blue'
+                                }, 3);
                             }
                         }
+                    },
+                    error: function() {
+                        $btn.prop('disabled', false);
                     }
                 });
                 return false;
@@ -117,30 +207,37 @@ frappe.listview_settings['Hackathon Team'] = {
                            frappe.session.user === 'Administrator';
 
             if (!is_admin) {
-                if (val === 'Level Up') return `<span class="indicator-pill green bold">Level Up</span>`;
-                if (val === 'Eliminate') return `<span class="indicator-pill red bold">Eliminate</span>`;
+                if (val === 'Level Up') return `<span class="indicator-pill green bold">Levelled Up</span>`;
                 return `<span class="text-muted">-</span>`;
             }
 
-            let level_up_selected = val === 'Level Up' ? 'selected' : '';
-            let eliminate_selected = val === 'Eliminate' ? 'selected' : '';
-            let none_selected = !val ? 'selected' : '';
-
-            let color_style = val === 'Level Up' ? 'color: #28a745; border-color: #28a745;' : (val === 'Eliminate' ? 'color: #dc3545; border-color: #dc3545;' : 'color: #6c757d; border-color: #d1d8dd;');
+            if (val === 'Level Up') {
+                return `
+                    <div class="eval-btn-wrapper" onclick="event.stopPropagation();" onmousedown="event.stopPropagation();" style="display:inline-block;">
+                        <button type="button" 
+                                class="btn btn-xs btn-success btn-level-up" 
+                                data-team="${frappe.utils.escape_html(doc.name)}" 
+                                data-decision="Level Up"
+                                onclick="event.stopPropagation();" 
+                                onmousedown="event.stopPropagation();" 
+                                style="height: 24px; padding: 1px 10px; font-size: 11px; font-weight: 600; border-radius: 4px; background-color: #28a745; border-color: #28a745; color: #fff; cursor: pointer;">
+                            <i class="fa fa-check" style="margin-right: 3px;"></i> Levelled Up
+                        </button>
+                    </div>
+                `;
+            }
 
             return `
-                <div class="eval-select-wrapper" onclick="event.stopPropagation();" onmousedown="event.stopPropagation();" onmouseup="event.stopPropagation();" style="display:inline-block;">
-                    <select class="form-control input-xs eval-decision-select" 
+                <div class="eval-btn-wrapper" onclick="event.stopPropagation();" onmousedown="event.stopPropagation();" style="display:inline-block;">
+                    <button type="button" 
+                            class="btn btn-xs btn-default btn-level-up" 
+                            data-team="${frappe.utils.escape_html(doc.name)}" 
+                            data-decision=""
                             onclick="event.stopPropagation();" 
                             onmousedown="event.stopPropagation();" 
-                            onmouseup="event.stopPropagation();" 
-                            onkeydown="event.stopPropagation();" 
-                            data-team="${frappe.utils.escape_html(doc.name)}" 
-                            style="height: 24px; padding: 1px 4px; font-size: 11px; width: 100px; border-radius: 4px; font-weight: 600; cursor: pointer; ${color_style}">
-                        <option value="" ${none_selected}>-- Select --</option>
-                        <option value="Level Up" ${level_up_selected}>Level Up</option>
-                        <option value="Eliminate" ${eliminate_selected}>Eliminate</option>
-                    </select>
+                            style="height: 24px; padding: 1px 10px; font-size: 11px; font-weight: 600; border-radius: 4px; border: 1px solid #d1d8dd; color: #495057; cursor: pointer; background-color: transparent;">
+                        Level Up
+                    </button>
                 </div>
             `;
         },

@@ -374,3 +374,26 @@ def rename_teams_to_codes():
                 skipped += 1
     frappe.db.commit()
     return f"Renamed {renamed} teams to their Team Codes. Skipped: {skipped}."
+
+@frappe.whitelist()
+def set_team_evaluation_decision(team_name, decision):
+    frappe.only_for(["System Manager", "Hackathon Organizer"])
+    if decision not in ["Level Up", ""]:
+        frappe.throw("Invalid decision.")
+    frappe.db.set_value("Hackathon Team", team_name, "evaluation_decision", decision)
+    frappe.db.commit()
+    return {"status": "success", "team": team_name, "decision": decision}
+
+@frappe.whitelist()
+def bulk_set_team_evaluation_decision(team_names, decision):
+    frappe.only_for(["System Manager", "Hackathon Organizer"])
+    import json
+    if isinstance(team_names, str):
+        team_names = json.loads(team_names)
+    if decision not in ["Level Up", ""]:
+        frappe.throw("Invalid decision.")
+    for name in team_names:
+        frappe.db.set_value("Hackathon Team", name, "evaluation_decision", decision)
+    frappe.db.commit()
+    return {"status": "success", "count": len(team_names)}
+
