@@ -12,15 +12,13 @@ def get_columns():
             "fieldname": "team_code",
             "label": "Team Code",
             "fieldtype": "Data",
-            "width": 160,
-            "filterable": 0
+            "width": 160
         },
         {
             "fieldname": "team_name",
             "label": "Team Name",
             "fieldtype": "Data",
-            "width": 180,
-            "filterable": 0
+            "width": 180
         },
         {
             "fieldname": "valid",
@@ -57,12 +55,18 @@ def get_columns():
             "label": "Team Link",
             "fieldtype": "Data",
             "hidden": 1
+        },
+        {
+            "fieldname": "evaluation_id",
+            "label": "Evaluation ID",
+            "fieldtype": "Data",
+            "hidden": 1
         }
     ]
 
 def get_data(filters):
     conditions = []
-    values = {}
+    values = {"user": frappe.session.user}
     if filters and filters.get('round'):
         conditions.append("e.round = %(round)s")
         values["round"] = filters.get("round")
@@ -75,7 +79,6 @@ def get_data(filters):
     
     if not is_privileged:
         conditions.append("e.evaluator = %(user)s")
-        values["user"] = frappe.session.user
         
     where_clause = ""
     if conditions:
@@ -86,6 +89,7 @@ def get_data(filters):
             COALESCE(NULLIF(t.team_code, ''), t.name) as team_code,
             t.name as team_link,
             t.team_name,
+            COALESCE(MAX(CASE WHEN e.evaluator = %(user)s THEN e.name ELSE NULL END), MAX(e.name)) as evaluation_id,
             CASE WHEN IFNULL(t.valid_composition, 0) = 1 THEN 'Valid' ELSE 'Invalid' END as valid,
             t.problem_statement_area as track,
             e.round,
