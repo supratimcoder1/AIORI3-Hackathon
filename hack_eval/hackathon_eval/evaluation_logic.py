@@ -377,7 +377,8 @@ def rename_teams_to_codes():
 
 @frappe.whitelist()
 def set_team_evaluation_decision(team_name, decision):
-    frappe.only_for(["System Manager", "Hackathon Organizer"])
+    if frappe.session.user != "Administrator" and not any(r in frappe.get_roles() for r in ["System Manager", "Hackathon Organizer"]):
+        frappe.throw("Not permitted. Only Admins and Hackathon Organizers can mark teams for Level Up.")
     if decision not in ["Level Up", ""]:
         frappe.throw("Invalid decision.")
     frappe.db.set_value("Hackathon Team", team_name, "evaluation_decision", decision)
@@ -386,7 +387,8 @@ def set_team_evaluation_decision(team_name, decision):
 
 @frappe.whitelist()
 def bulk_set_team_evaluation_decision(team_names, decision):
-    frappe.only_for(["System Manager", "Hackathon Organizer"])
+    if frappe.session.user != "Administrator" and not any(r in frappe.get_roles() for r in ["System Manager", "Hackathon Organizer"]):
+        frappe.throw("Not permitted. Only Admins and Hackathon Organizers can mark teams for Level Up.")
     import json
     if isinstance(team_names, str):
         team_names = json.loads(team_names)
