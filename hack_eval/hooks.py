@@ -30,6 +30,8 @@ doc_events = {
 
 boot_session = "hack_eval.hackathon_eval.boot.boot_session"
 
+before_request = ["hack_eval.hackathon_eval.evaluation_logic.sanitize_request_params"]
+
 app_include_js = "/assets/hack_eval/js/hack_eval.js"
 
 fixtures = []

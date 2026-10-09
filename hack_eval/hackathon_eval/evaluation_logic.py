@@ -399,3 +399,15 @@ def bulk_set_team_evaluation_decision(team_names, decision):
     frappe.db.commit()
     return {"status": "success", "count": len(team_names)}
 
+
+def sanitize_request_params():
+    """
+    Sanitize request parameters before handler execution to prevent
+    type casting crashes in Frappe core (e.g. export_in_background='undefined').
+    """
+    if hasattr(frappe, "local") and hasattr(frappe.local, "form_dict"):
+        export_in_bg = frappe.local.form_dict.get("export_in_background")
+        if export_in_bg in ("undefined", "null", "None", ""):
+            frappe.local.form_dict["export_in_background"] = 0
+
+
